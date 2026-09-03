@@ -22,32 +22,32 @@ The empirical ending matters: behavioral embeddings deliver the main predictive 
 
 ## The formalism, simply
 
-For customer \(x\), let \(\mathcal A(x)\) be the eligible programs and let
+For customer $x$, let $\mathcal A(x)$ be the eligible programs and let
 
-\[
+$$
 p_a(x)=\Pr(x\text{ enrolls in program }a)
-\]
+$$
 
-be the true enrollment propensity. A fitted model combines static attributes \(s(x)\) with a behavioral embedding \(z(x)\):
+be the true enrollment propensity. A fitted model combines static attributes $s(x)$ with a behavioral embedding $z(x)$:
 
-\[
+$$
 \widetilde p_a(x)=f_a\!\left(s(x),z(x)\right).
-\]
+$$
 
 The direct recommender chooses the eligible program with the largest fitted propensity. To test whether local evidence should adjust that score, the method builds nested peer sets
 
-\[
+$$
 \mathcal N_1(x;r)\supseteq\mathcal N_2(x;r)\supseteq\cdots\supseteq\mathcal N_M(x;r).
-\]
+$$
 
-Each refinement adds detail. The worst mismatch among the remaining peers can only improve, while the peer count \(n_m\) can only fall. The central bound makes that tradeoff explicit:
+Each refinement adds detail. The worst mismatch among the remaining peers can only improve, while the peer count $n_m$ can only fall. The central bound makes that tradeoff explicit:
 
-\[
+$$
 b_m(x)=\varepsilon_m^\rho(x)
 +B\sqrt{\frac{\log(2K_x/\alpha)}{2n_m}}.
-\]
+$$
 
-Here \(\varepsilon_m^\rho\) measures how unlike the peers' remaining model errors are from the target's error; the second term is the uncertainty cost of limited support. The selected program's propensity regret is at most \(2b_m(x)\) under the theorem's stated assumptions. The useful neighborhood is therefore not automatically the deepest one—it is the point where a closer match is still worth the peers it costs.
+Here $\varepsilon_m^\rho$ measures how unlike the peers' remaining model errors are from the target's error; the second term is the uncertainty cost of limited support. The selected program's propensity regret is at most $2b_m(x)$ under the theorem's stated assumptions. The useful neighborhood is therefore not automatically the deepest one—it is the point where a closer match is still worth the peers it costs.
 
 ## What the evidence says
 
