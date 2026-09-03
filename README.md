@@ -12,7 +12,7 @@ This private repository contains the propensity-neighborhood theory, recommender
 
 ## Current finding
 
-Behavioral embeddings provide the main practical gain in the chronological KuaiRec study. They improve future propensity estimation and recommendation ranking. Nested neighborhoods provide a principled support tradeoff, modest local calibration gains, a computationally staged retrieval scheme, and a margin-aware confidence gate for deciding when local evidence should affect a recommendation.
+Behavioral embeddings provide the main practical gain in the chronological KuaiRec study. Operational peer-mean neighborhoods add a small, consistent improvement in propensity RMSE, but no detectable improvement in the winning recommendation. The refinement theorem supplies the general support tradeoff; its operational corollaries distinguish latent-propensity guarantees under a valid residual band from marginal realized-outcome guarantees under exchangeability.
 
 ## Reproduce
 
@@ -31,6 +31,16 @@ python scripts\kuairec_behavior_embedding_test.py
 ```
 
 The default scripts write machine-readable outputs below `results/`.
+
+Run the leakage-free operational neighborhood diagnostic and its radius sensitivities with:
+
+```powershell
+python scripts\kuairec_operational_frontier.py --output results\kuairec_operational_frontier
+python scripts\kuairec_operational_frontier.py --radius-quantile 0.05 --output results\kuairec_operational_frontier_q05
+python scripts\kuairec_operational_frontier.py --radius-quantile 0.25 --output results\kuairec_operational_frontier_q25
+```
+
+The primary operational report is `results/kuairec_operational_frontier/README.md`.
 
 ## Papers
 

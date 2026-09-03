@@ -24,7 +24,7 @@
 \definecolor{pale}{HTML}{EDF3F6}
 \colorlet{orcidlogocol}{black}
 \hypersetup{
-  pdftitle={The Last Useful Feature: Propensity Neighborhoods for Energy Program Choice},
+  pdftitle={Behavioral Embeddings and Propensity Neighborhoods for Program Recommendation},
   pdfauthor={J. R. Landers},
   pdfsubject={Behavioral embeddings, nested propensity neighborhoods, calibration, and energy program recommendation},
   pdfkeywords={recommender systems, energy programs, propensity models, behavioral embeddings, customer neighborhoods, calibration}
@@ -80,12 +80,10 @@
 \begin{document}
 
 \begin{center}
-  {\LARGE\bfseries The Last Useful Feature\par}
-  \vspace{0.06em}
-  {\Large Propensity Neighborhoods for Energy Program Choice\par}
-  \vspace{0.28em}
+  {\LARGE\bfseries Behavioral Embeddings and Propensity Neighborhoods for Program Recommendation\par}
+  \vspace{0.7em}
   {\large J. R. Landers\,\orcidlink{0000-0003-1872-6179}\par}
-  \vspace{0.04em}
+  \vspace{0.12em}
   {\small September 2026}
 \end{center}
 
@@ -101,7 +99,7 @@ These pieces form an operational workflow: filter eligible programs, learn the b
 The theory and experiments organized around this workflow yield three connected conclusions:
 
 \begin{center}
-\emph{Behavioral embeddings provide the largest empirical gain by creating customer coordinates that preserve future propensity similarity. Neighborhood calibration adds smaller and less consistent gains, chiefly in propensity calibration. The refinement-frontier theorem provides a finite-sample recommendation-regret guarantee that identifies when better local matching outweighs the sampling uncertainty created by thinner neighborhoods.}
+\emph{Behavioral embeddings provide the largest empirical gain by creating customer coordinates that preserve future propensity similarity. Operational peer-mean neighborhood calibration adds a small but consistent improvement in propensity RMSE, without a detectable improvement in the winning recommendation. The refinement-frontier theorem and its operational corollaries provide finite-sample guarantees for latent propensities under a valid residual band and marginal guarantees for realized outcomes under exchangeability.}
 \end{center}
 
 \section{From behavior to a propensity matrix}
@@ -132,7 +130,7 @@ Customer attributes need not be the only coordinates. Let $H=(H_{i\ell})\in\math
  H\approx U_D\Sigma_DV_D^\top,
  \qquad z(x_i)=(U_D\Sigma_D)_{i\cdot}\in\mathbb R^D,
 \]
-where $U_D\in\mathbb R^{N\times D}$ and $V_D\in\mathbb R^{J\times D}$ contain customer and item directions, $\Sigma_D\in\mathbb R^{D\times D}$ contains their singular values, ${}^\top$ denotes transpose, and $(\cdot)_{i\cdot}$ selects row $i$. This maps a long behavioral history to a $D$-coordinate customer embedding $z(x_i)$ \cite{koren}. The factorization is learned from history only. If $s(x)$ denotes the vector of ordinary premise and customer attributes, a program model $f_a$ takes the form
+where $U_D\in\mathbb R^{N\times D}$ and $V_D\in\mathbb R^{J\times D}$ contain customer and item directions, $\Sigma_D\in\mathbb R^{D\times D}$ contains their singular values, ${}^\top$ denotes transpose, and $(\cdot)_{i\cdot}$ selects row $i$. This maps a long behavioral history to a $D$-coordinate customer embedding $z(x_i)$, following the matrix-factorization tradition in collaborative filtering \cite{koren}. Modern sequential recommenders learn richer behavioral representations with causal or bidirectional self-attention \cite{sasrec,bert4rec}, while recent generative-retrieval systems encode interaction histories and items as semantic tokens \cite{tiger}. The factorization here is deliberately transparent rather than architecture-specific, and it is learned from history only. If $s(x)$ denotes the vector of ordinary premise and customer attributes, a program model $f_a$ takes the form
 \begin{equation}\label{eq:prop-model}
  \widetilde p_a(x)=f_a\bigl(s(x),z(x)\bigr),\qquad a\in\cA.
 \end{equation}
@@ -173,6 +171,8 @@ Equivalently, set $\delta_1(x,x')=d_1(x,x')$ and $\delta_j(x,x')=d_j(x,x')-d_{j-
  \qquad n_m=|\cN_m(x;r)|.
 \]
 Only nonempty levels are considered.
+
+Local averaging over nearby profiles belongs to the classical nonparametric-regression tradition \cite{stone}. More recent local-calibration methods likewise assess reliability around similar predictions in a pretrained feature space \cite{luo}. The construction here differs by calibrating an entire program-indexed residual vector and nesting fixed-radius neighborhoods by declared feature blocks, which makes the support spent by each refinement explicit.
 
 \begin{proposition}[More detail leaves fewer peers]\label{prop:thin}
 For $m=1,\ldots,M-1$,
@@ -245,7 +245,7 @@ Let $\bar\rho_{a,m}(x)=n_m^{-1}\sum_{i\in\cN_m(x;r)}\rho_a(x_i)$ be the peers' m
 \[
  |\bar\rho_{a,m}(x)-\rho_a(x)|\leq\varepsilon_m^\rho(x).
 \]
-Hoeffding's inequality and a union bound over the $K_x$ eligible programs bound the deviation of each empirical mean residual from $\bar\rho_{a,m}(x)$ by
+Hoeffding's inequality \cite{hoeffding} and a union bound over the $K_x$ eligible programs bound the deviation of each empirical mean residual from $\bar\rho_{a,m}(x)$ by
 $q_m=B\sqrt{\log(2K_x/\alpha)/(2n_m)}$. Thus
 $|\widehat p_{a,m}(x)-p_a(x)|\leq b_m(x)$ simultaneously in $a$. Because $\widehat a_m$ maximizes the fitted values,
 \[
@@ -265,6 +265,61 @@ The two terms move in opposite directions. Proposition~\ref{prop:mismatch} makes
 \end{equation}
 This minimizing level gives the title its operational meaning: the last useful feature block is the last refinement whose gain in local match quality is worth the peer support it spends.
 
+The true mismatch in \eqref{eq:rule} is not generally observed for a new customer. A separate residual model makes the frontier operational without pretending otherwise. Let $\widehat\rho(x)$ be trained away from the reference and target outcomes, let
+\[
+ R_i=Y_i-\widetilde p(x_i),\qquad
+ c_m(x)=\lambda_m\frac{1}{n_m}\sum_{i\in\cN_m(x;r)}R_i,
+ \qquad \lambda_m\in[0,1],
+\]
+and include a level $m=0$ with $c_0(x)=0$. Two observable discrepancies are
+\begin{align*}
+ D_m^{\mathrm{mean}}(x)
+ &=\|\widehat\rho(x)-c_m(x)\|_\infty,\\
+ D_m^{\max}(x)
+ &=\lambda_m\max_{i\in\cN_m(x;r)}
+   \|\widehat\rho(x)-R_i\|_\infty
+   +(1-\lambda_m)\|\widehat\rho(x)\|_\infty.
+\end{align*}
+Convexity gives $D_m^{\mathrm{mean}}(x)\leq D_m^{\max}(x)$. The second expression retains the theorem's worst-neighbor form; the first exploits the fact that the implemented correction is specifically a peer mean.
+For $m=0$, set both discrepancies to $\|\widehat\rho(x)\|_\infty$.
+
+\begin{corollary}[Operational peer-mean frontier]\label{cor:operational}
+Suppose an independently constructed simultaneous band satisfies
+\[
+ \Pr\!\left\{\|\rho(x)-\widehat\rho(x)\|_\infty\leq\eta(x)\right\}
+ \geq1-\delta.
+\]
+Choose $\widehat m(x)$ by minimizing either observable discrepancy over the available levels, including $m=0$, without using $p(x)$. Then, with probability at least $1-\delta$,
+\[
+ \|p(x)-[\widetilde p(x)+c_{\widehat m}(x)]\|_\infty
+ \leq \eta(x)+D_{\widehat m}^{\mathrm{mean}}(x)
+ \leq \eta(x)+D_{\widehat m}^{\max}(x),
+\]
+and the selected program has propensity regret at most twice the corresponding right-hand side.
+\end{corollary}
+
+\begin{proof}
+The first inequality is the triangle inequality applied to
+$\rho(x)-c_{\widehat m}(x)=[\rho(x)-\widehat\rho(x)]+[\widehat\rho(x)-c_{\widehat m}(x)]$.
+The second follows from convexity, and the regret step is the same two-error argument used in Theorem~\ref{thm:frontier}.
+\end{proof}
+
+Corollary~\ref{cor:operational} is a latent-propensity statement only when the stated band covers the latent residual $\rho(x)$. Ordinary split conformal calibration of observed outcomes does not, by itself, supply distribution-free pointwise coverage of a conditional mean. It does give a distinct operational guarantee. Freeze the entire peer-retrieval, level-selection, and correction algorithm before an independent calibration split; let $\widehat p^{\mathrm{op}}(x)$ denote its output and set
+\[
+ S_i=\|Y_i-\widehat p^{\mathrm{op}}(x_i)\|_\infty.
+\]
+If $q_{1-\alpha}$ is the split-conformal quantile with the standard finite-sample correction, exchangeability of the calibration users and a future user gives
+\begin{equation}\label{eq:conformal-operational}
+ \Pr\!\left\{
+ \|Y-\widehat p^{\mathrm{op}}(X)\|_\infty\leq q_{1-\alpha}
+ \right\}\geq1-\alpha,
+\end{equation}
+and realized-outcome regret is at most $2q_{1-\alpha}$ on that event \cite{shafer}. This coverage is finite-sample and marginal over a future exchangeable user; it is not conditional coverage of $p(x)$.
+
+\begin{remark}[Known propensity coordinates]\label{rem:known}
+Some coordinates need no residual model. If current enrollment or a deterministic eligibility state implies $p_a(x)=1$, then $\rho_a(x)=1-\widetilde p_a(x)$ is known at recommendation time; similarly, $p_a(x)=0$ gives $\rho_a(x)=-\widetilde p_a(x)$. A coordinatewise version of Corollary~\ref{cor:operational} sets the uncertainty radius to zero on these coordinates and retains a residual band only for the unknown coordinates. Thus partial knowledge can make the operational certificate strictly sharper.
+\end{remark}
+
 \begin{corollary}[A confident recommendation]\label{cor:margin}
 Assume $K_x\geq2$. On the event in Theorem~\ref{thm:frontier}, let $\widehat a_m$ have empirical lead
 \[
@@ -278,6 +333,8 @@ If $\Delta_m(x)>2b_m(x)$, then $\widehat a_m$ is the unique true best program.
 Every true propensity lies within $b_m$ of its estimate. An empirical lead exceeding $2b_m$ therefore remains positive after both scores move by their largest permitted errors.
 \end{proof}
 
+This result is related to, but distinct from, the broader calibration literature. Accurate modern predictors can still return unreliable probabilities, motivating global post-processing methods such as temperature scaling \cite{guo}; learned-space methods make that assessment local \cite{luo}; and recent distribution-free work seeks group-conditional and multicalibrated guarantees \cite{venn}. The present theorem instead controls the regret of the selected program and makes the guarantee depend explicitly on neighborhood mismatch and peer support.
+
 Shrinkage is often useful in implementation. Multiplying the residual correction in \eqref{eq:residual} by $\lambda\in[0,1]$ changes the uniform error term to at most
 \[
  (1-\lambda)\|\rho(x)\|_\infty
@@ -287,7 +344,9 @@ Cross-validation can select $\lambda$ before the test period. Corollary~\ref{cor
 
 \section{A recommender workflow}
 
-The three claims fit into a six-step operating loop: learn a useful representation, add local calibration only where it is supported, and use the guarantee to govern refinement and recommendation. Each step has an operational object and, where relevant, a formal guarantee.
+The three claims fit into a six-step operating loop: learn a useful representation, add local calibration only where it is supported, and use the guarantee to govern refinement and recommendation. Its separation of candidate generation from scoring follows the retrieve-and-rank pattern used in large-scale recommenders \cite{covington}, while the neighborhood and certificate layers determine whether local evidence should modify the ranker. Each step has an operational object and, where relevant, a formal guarantee.
+
+Within the energy domain, collaborative-filtering systems have recommended retail electricity plans from appliance and consumption patterns \cite{zhangplan}, while smart-meter models have targeted customers for energy-efficiency programs \cite{liang}. The workflow below extends that line by joining behavioral representation and program scoring to local residual calibration and an explicit finite-sample decision gate.
 
 \begin{enumerate}[label=\textbf{\arabic*.},itemsep=.7ex]
 \item \textbf{Generate candidates and filter eligibility.} Construct the feasible program set before ranking:
@@ -334,6 +393,8 @@ Evaluate the same models out of fold on historical customers. Their rows in $\wi
 \]
 \emph{Proposition~\ref{prop:mismatch} and Theorem~\ref{thm:frontier} fit here: refinement improves the worst remaining match while lost peers increase uncertainty. The selected level is the last point at which the trade remains favorable.}
 
+When target residuals are latent, fit $\widehat\rho(x)$ on a separate split and replace the inaccessible mismatch by $D_m^{\max}(x)$ or, for the peer-mean correction, the tighter $D_m^{\mathrm{mean}}(x)$. Level zero remains available, so the operational rule retains the base model whenever no neighborhood has a smaller observable discrepancy. Known propensity coordinates use their exact residuals as in Remark~\ref{rem:known}.
+
 \item \textbf{Calibrate, recommend, or retain the base ranking.} Use the selected peers' out-of-fold residuals:
 \[
  \widehat p_{a,\widehat m}(x)=\widetilde p_a(x)
@@ -343,7 +404,7 @@ Evaluate the same models out of fold on historical customers. Their rows in $\wi
  \qquad
  \widehat a(x)\in\argmax_{a\in\cA(x)}\widehat p_{a,\widehat m}(x).
 \]
-Compute the top-two margin $\Delta_{\widehat m}(x)$. If it exceeds $2b_{\widehat m}(x)$, issue the locally supported recommendation; otherwise retain the direct model choice or attach a low-confidence flag. \emph{Corollary~\ref{cor:margin} fits here: the margin converts the error bound into a decision certificate.}
+Compute the top-two margin $\Delta_{\widehat m}(x)$. Compare it with $2b_{\widehat m}(x)$ under Theorem~\ref{thm:frontier}, with the operational bound in Corollary~\ref{cor:operational} when a valid latent-residual band is available, or with $2q_{1-\alpha}$ for marginal realized-outcome coverage. Issue a locally supported recommendation only when the applicable margin clears its bound; otherwise retain the direct model choice or attach a low-confidence flag. \emph{Corollary~\ref{cor:margin} converts whichever uniform error guarantee applies into a decision certificate.}
 \end{enumerate}
 
 The computation is naturally staged. Cheap coordinates screen the reference population; later blocks are evaluated only for surviving peers and only for customers whose leading programs remain close. The theorem therefore governs statistical effort and computational effort through the same shrinking set.
@@ -352,7 +413,7 @@ The computation is naturally staged. Cheap coordinates screen the reference popu
 
 The empirical analysis evaluates the story in the same order: first the value of the behavioral representation, then the incremental value of neighborhood calibration, and finally the support loss predicted by the refinement frontier. The framework was tested on KuaiRec, a nearly fully observed short-video recommendation dataset with 1,411 users and 3,327 items \cite{gao}. Video categories play the role of programs, and a customer's propensity for category $a$ is the fraction of its videos watched to completion. The twelve largest categories form the action set and supply a behavioral analogue of program enrollment.
 
-Each user's interactions were ordered by time. The first 60\% formed the observable history $H$; the last 40\% formed future propensity targets. Within each of ten repeated outer splits, 60\% of users estimated ridge propensity models and out-of-fold residuals, 25\% tuned neighborhood choices, and 15\% were untouched test users. A 32-coordinate truncated-SVD embedding was fit using estimation histories only. Approximately 2.22 million early interactions built the representations and 1.48 million later interactions supplied outcomes. Operational comparisons used $k\in\{25,50,100,200\}$ nearest neighbors, where $k$ is the fixed peer count, and validation-selected residual shrinkage. This fixes peer support and complements the fixed-radius refinement studied by the theorem. RMSE averages coordinatewise error against the observed future category rates; top-1 regret is the future-rate difference between the best category and the recommended category; hit rate is the fraction for which those categories coincide.
+Each user's interactions were ordered by time. The first 60\% formed the observable history $H$; the last 40\% formed future propensity targets. Within each of ten repeated outer splits, 60\% of users estimated ridge propensity models and out-of-fold residuals, 25\% tuned neighborhood choices, and 15\% were untouched test users. A 32-coordinate truncated-SVD embedding was fit using estimation histories only. Approximately 2.22 million early interactions built the representations and 1.48 million later interactions supplied outcomes. Operational comparisons used $k\in\{25,50,100,200\}$ nearest neighbors, where $k$ is the fixed peer count, and validation-selected residual shrinkage. This fixes peer support and complements the fixed-radius refinement studied by the theorem. The SVD--ridge pipeline is an interpretable test bed for representation geometry and calibration, not a benchmark against contemporary Transformer or generative-retrieval architectures. RMSE averages coordinatewise error against the observed future category rates; top-1 regret is the future-rate difference between the best category and the recommended category; hit rate is the fraction for which those categories coincide.
 
 \begin{center}
 \refstepcounter{table}
@@ -382,7 +443,32 @@ First, the behavioral representation supplies the main gain. Relative to static 
 
 Second, the neighborhood experiments separate calibration from ranking. Embedding-space neighbors reduce regret by 6.8\% relative to static features across all ten splits, although their incremental gain over the embedding model is small. In the fresh propensity-space confirmation, full-row neighbors improve RMSE in nine of ten splits. Better calibration does not necessarily produce a better winning program, however: mean regret is 2.2\% above the direct embedding ranker. Leave-one-program-out matching is less informative, indicating that a program's own score is an important coordinate of propensity-space retrieval. These results support neighborhood calibration as a modest correction layer, not as a replacement for the embedding model.
 
-Third, an earlier static-feature pilot displayed the theorem's geometric mechanism directly. Deeper fixed-radius neighborhoods lost coverage and performance, while the support-aware rule selected the first three levels for 71.1\%, 17.7\%, and 11.2\% of customers and never selected the deepest level. Its finite-sample certificate covered realized regret, though it was numerically loose. The pilot illustrates the guarantee's practical roles: stop refinement before support disappears and gate score corrections by the recommendation margin. Taken together, the experiments recover the full narrative: the embedding supplies the large gain, neighborhood calibration supplies a smaller correction, and the theorem determines when that correction has adequate local support.
+Third, a separate leakage-free diagnostic addresses the unknown-residual issue directly. In each of twenty user splits, disjoint groups fit a static-feature ridge base model, fit a random-forest $\widehat\rho$, supply reference residuals, calibrate conformal scores, and evaluate the frozen rule; the respective proportions were 45\%, 15\%, 15\%, 10\%, and 15\%. This yields 4,280 held-out-user evaluations. The target is each user's observed full-period category-rate vector, not the chronological future target used above, so the conformal statement is marginal realized-outcome coverage rather than pointwise coverage of latent propensities.
+
+\newpage
+\begin{center}
+\refstepcounter{table}
+\parbox{.94\linewidth}{\small\textbf{Table \thetable.} Operational fixed-radius diagnostic over twenty disjoint five-way user splits. Lower RMSE and regret are better. Neighborhood use is the fraction of test users for whom the rule changes from level zero to a peer correction.}
+\label{tab:operational}
+\vspace{.35em}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Method & RMSE & Top-1 regret & Hit rate & Neighborhood use \\
+\midrule
+Base model & 0.110439 & 0.019361 & 49.18\% & 0.00\% \\
+Theorem-faithful max frontier & 0.110438 & 0.019361 & 49.18\% & 0.09\% \\
+Operational peer-mean frontier & \textbf{0.110129} & \textbf{0.019257} & \textbf{49.35\%} & 63.36\% \\
+Legacy score-space proxy & 0.110318 & 0.019429 & 49.00\% & 100.00\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The peer-mean frontier lowers RMSE by $0.000310$ relative to the base model; the descriptive paired split-level 95\% $t$ interval is $[-0.000560,-0.000060]$. Because repeated test sets overlap, this interval summarizes split stability rather than providing independent-sample inference. The result persists at radius quantiles 0.05 and 0.25, with RMSE changes of $-0.000430$ and $-0.000365$. Its top-1 regret and hit-rate intervals include zero, so the evidence supports a small improvement in probability estimation but not a detectable improvement in the recommended category. The max-neighbor frontier is substantially more conservative, retaining the base model for 4,276 of 4,280 users.
+
+At nominal 90\% coverage, the direct peer-mean construction covers 94.1\% of held-out max errors and has mean regret bound 0.5543. End-to-end split conformal calibration of the frozen selection rule covers 90.9\% with mean regret bound 0.5053, compared with 90.96\% coverage and bound 0.5018 for the base conformal benchmark. The operational certificate is therefore valid but not sharper than the base benchmark on these data; no predicted top-two margin is wide enough to certify an individual winning category. By contrast, the earlier retrospective diagnostic uses the held-out outcome to evaluate mismatch after the fact, covers all realized regrets, and has a much wider mean bound of 1.0730. It is retained only as a geometric diagnostic, not presented as a deployable certificate.
+
+Finally, the earlier static-feature pilot displays the theorem's geometric mechanism directly. Deeper fixed-radius neighborhoods lose coverage and performance, while the support-aware heuristic selects the first three levels for 71.1\%, 17.7\%, and 11.2\% of customers and never selects the deepest level. It illustrates why refinement should stop before support disappears. Taken together, the experiments recover the full narrative: the embedding supplies the large gain, peer-mean neighborhoods supply a smaller calibration improvement, and the theory distinguishes what can be guaranteed for latent propensities from what can be validated marginally for held-out outcomes.
 
 \begin{center}
 \begin{tikzpicture}
@@ -445,31 +531,75 @@ Third, an earlier static-feature pilot displayed the theorem's geometric mechani
 
 \section{Interpretation and scope}
 
-The empirical and theoretical results play different roles. Behavioral embeddings carry most of the predictive gain, while propensity neighborhoods provide a smaller local calibration layer. The theorem does not presume that every refinement helps. Its contribution is a finite-sample regret guarantee that exposes the price of asking for a closer match: better residual similarity must compensate for thinner peer support. The margin certificate then determines when that local evidence is strong enough to affect the recommendation.
+The empirical and theoretical results play different roles. Behavioral embeddings carry most of the predictive gain, while propensity neighborhoods provide a smaller local calibration layer. The operational experiment finds a consistent RMSE improvement but no detectable change in the winning recommendation, and its valid realized-outcome certificate is not sharper than conformal calibration of the base model. The theorem does not presume that every refinement helps: its contribution is a finite-sample regret guarantee that exposes the price of asking for a closer match, while Corollary~\ref{cor:operational} states exactly what additional residual information makes that guarantee computable at test time.
 
-Enrollment propensity and causal value answer different questions. The present result concerns enrollment propensity. If the objective is incremental enrollment or energy savings, $p_a(x)$ can be replaced by an identified action-specific treatment effect under the corresponding assignment and policy-evaluation design \cite{dudik}. Customer targeting can materially affect program savings and cost effectiveness \cite{jones}.
+That information can range from a modeled band to exact domain knowledge. When a coordinate is deterministically known---for example, current enrollment makes its propensity one---Remark~\ref{rem:known} removes uncertainty for that coordinate. When propensities remain latent, the band in Corollary~\ref{cor:operational} is an explicit assumption to be justified by the data-generating design. When only exchangeable held-out outcomes are available, \eqref{eq:conformal-operational} provides finite-sample marginal coverage for those outcomes, not a pointwise guarantee for the conditional propensity. Keeping these regimes separate is essential to the interpretation of the theory and experiments.
+
+Enrollment propensity and causal value answer different questions. The present result concerns enrollment propensity. If the objective is incremental enrollment or energy savings, $p_a(x)$ can be replaced by an identified action-specific treatment effect under the corresponding assignment and policy-evaluation design \cite{dudik}. Foundational utility evidence shows that customer targeting can materially affect program savings and cost effectiveness \cite{jones}. Recent work uses causal forests to target household energy interventions \cite{knittel} and machine learning to direct retrofit funds toward projects with higher predicted net benefits \cite{christensen}. Those studies optimize heterogeneous causal or economic returns; this note instead studies enrollment choice and the reliability of a local propensity correction, while leaving the same workflow open to identified treatment-effect targets.
 
 The propositions say exactly what refinement does, and the theorem prices what it costs. The embedding and propensity matrix show where the method fits in a working recommender. Together, these pieces form an end-to-end workflow from eligibility and behavioral representation through propensity scoring and support-aware calibration to a certified recommendation or abstention. The argument therefore closes with the same three claims with which it began:
 
 \begin{center}
-\emph{Behavioral embeddings provide the largest empirical gain by creating customer coordinates that preserve future propensity similarity. Neighborhood calibration adds smaller and less consistent gains, chiefly in propensity calibration. The refinement-frontier theorem provides a finite-sample recommendation-regret guarantee that identifies when better local matching outweighs the sampling uncertainty created by thinner neighborhoods.}
+\emph{Behavioral embeddings provide the largest empirical gain by creating customer coordinates that preserve future propensity similarity. Operational peer-mean neighborhood calibration adds a small but consistent improvement in propensity RMSE, without a detectable improvement in the winning recommendation. The refinement-frontier theorem and its operational corollaries provide finite-sample guarantees for latent propensities under a valid residual band and marginal guarantees for realized outcomes under exchangeability.}
 \end{center}
 
-\begin{thebibliography}{4}\footnotesize
+\begin{thebibliography}{18}\scriptsize
 \setlength{\itemsep}{.12ex}
 \setlength{\parskip}{0pt}
-
-\bibitem{gao}
-C. Gao, S. Li, W. Lei, J. Chen, B. Li, P. Jiang, X. He, J. Mao, and T.-S. Chua, ``KuaiRec: A Fully-Observed Dataset and Insights for Evaluating Recommender Systems,'' in \emph{Proc. CIKM}, pp. 540--550, 2022.
 
 \bibitem{koren}
 Y. Koren, R. Bell, and C. Volinsky, ``Matrix factorization techniques for recommender systems,'' \emph{Computer}, 42(8):30--37, 2009.
 
-\bibitem{jones}
-N. W. Taylor, P. H. Jones, and M. J. Kipp, ``Targeting utility customers to improve energy savings from conservation and efficiency programs,'' \emph{Applied Energy}, 115:25--36, 2014.
+\bibitem{sasrec}
+W.-C. Kang and J. McAuley, ``Self-attentive sequential recommendation,'' in \emph{Proc. IEEE ICDM}, pp. 197--206, 2018.
+
+\bibitem{bert4rec}
+F. Sun, J. Liu, J. Wu, C. Pei, X. Lin, W. Ou, and P. Jiang, ``BERT4Rec: Sequential recommendation with bidirectional encoder representations from Transformer,'' in \emph{Proc. ACM CIKM}, pp. 1441--1450, 2019.
+
+\bibitem{tiger}
+S. Rajput, N. Mehta, A. Singh, R. H. Keshavan, T. Vu, L. Heldt, L. Hong, Y. Tay, V. Q. Tran, J. Samost, M. Kula, E. H. Chi, and M. Sathiamoorthy, ``Recommender systems with generative retrieval,'' in \emph{Advances in Neural Information Processing Systems}, vol. 36, 2023.
+
+\bibitem{stone}
+C. J. Stone, ``Consistent nonparametric regression,'' \emph{Annals of Statistics}, 5(4):595--620, 1977.
+
+\bibitem{luo}
+R. Luo, A. Bhatnagar, Y. Bai, S. Zhao, H. Wang, C. Xiong, S. Savarese, S. Ermon, E. Schmerling, and M. Pavone, ``Local calibration: Metrics and recalibration,'' in \emph{Proc. UAI}, PMLR 180:1286--1295, 2022.
+
+\bibitem{hoeffding}
+W. Hoeffding, ``Probability inequalities for sums of bounded random variables,'' \emph{Journal of the American Statistical Association}, 58(301):13--30, 1963.
+
+\bibitem{shafer}
+G. Shafer and V. Vovk, ``A tutorial on conformal prediction,'' \emph{Journal of Machine Learning Research}, 9:371--421, 2008.
+
+\bibitem{guo}
+C. Guo, G. Pleiss, Y. Sun, and K. Q. Weinberger, ``On calibration of modern neural networks,'' in \emph{Proc. ICML}, PMLR 70:1321--1330, 2017.
+
+\bibitem{venn}
+L. Van Der Laan and A. Alaa, ``Generalized Venn and Venn--Abers calibration with applications in conformal prediction,'' in \emph{Proc. ICML}, PMLR 267:60748--60763, 2025.
+
+\bibitem{covington}
+P. Covington, J. Adams, and E. Sargin, ``Deep neural networks for YouTube recommendations,'' in \emph{Proc. ACM Conference on Recommender Systems}, pp. 191--198, 2016.
+
+\bibitem{zhangplan}
+Y. Zhang, K. Meng, W. Kong, and Z. Y. Dong, ``Collaborative filtering-based electricity plan recommender system,'' \emph{IEEE Transactions on Industrial Informatics}, 15(3):1393--1404, 2019.
+
+\bibitem{liang}
+H. Liang, J. Ma, R. Sun, and Y. Du, ``A data-driven approach for targeting residential customers for energy efficiency programs,'' \emph{IEEE Transactions on Smart Grid}, 11(2):1229--1238, 2020.
+
+\bibitem{gao}
+C. Gao, S. Li, W. Lei, J. Chen, B. Li, P. Jiang, X. He, J. Mao, and T.-S. Chua, ``KuaiRec: A Fully-Observed Dataset and Insights for Evaluating Recommender Systems,'' in \emph{Proc. CIKM}, pp. 540--550, 2022.
 
 \bibitem{dudik}
 M. Dud\'{i}k, J. Langford, and L. Li, ``Doubly robust policy evaluation and learning,'' in \emph{Proc. ICML}, pp. 1097--1104, 2011.
+
+\bibitem{jones}
+N. W. Taylor, P. H. Jones, and M. J. Kipp, ``Targeting utility customers to improve energy savings from conservation and efficiency programs,'' \emph{Applied Energy}, 115:25--36, 2014.
+
+\bibitem{knittel}
+C. R. Knittel and S. Stolper, ``Using machine learning to target treatment: The case of household energy use,'' \emph{Economic Journal}, 135(672):2377--2401, 2025.
+
+\bibitem{christensen}
+P. Christensen, P. Francisco, E. Myers, H. Shao, and M. Souza, ``Energy efficiency can deliver for climate policy: Evidence from machine learning-based targeting,'' \emph{Journal of Public Economics}, 234:105098, 2024.
 
 \end{thebibliography}
 
