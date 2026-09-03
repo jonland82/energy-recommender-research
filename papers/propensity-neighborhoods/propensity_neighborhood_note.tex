@@ -92,15 +92,17 @@
 \vspace{0.05em}
 \section{Setting}
 
-Suppose a utility can estimate every eligible program's enrollment propensity for every customer. The note can be summarized in two sentences:
+Suppose a utility can estimate every eligible program's enrollment propensity for every customer. A direct recommender can mask ineligible programs and choose the largest fitted propensity, but even a strong model may retain local patterns of overprediction and underprediction. The question is whether similar historical customers provide enough evidence to correct those remaining errors before a program is chosen.
+
+The proposed recommender first converts behavioral history into customer coordinates and uses them to estimate one propensity score for every program. It then retrieves historical customers with similar representations or propensity profiles and averages their out-of-fold model residuals to calibrate the target customer's scores. Adding coordinate blocks makes these fixed-radius neighborhoods more specific but also thinner, so the method must stop when a better local match no longer compensates for the loss of peer support.
+
+These pieces form an operational workflow: filter eligible programs, learn the behavioral representation, score the propensity row, retrieve nested peers, select a support-aware refinement depth, and then calibrate, rank, or abstain. The workflow combines the primary predictive model, the local correction, and the theorem's decision certificate in one implementable sequence.
+
+The theory and experiments organized around this workflow yield three connected conclusions:
 
 \begin{center}
-\emph{Adding feature coordinates to a customer representation can only shrink its fixed-radius neighborhood. Useful refinement therefore requires coordinates that preserve propensity similarity and enough remaining peers for the gain in match quality to exceed sampling uncertainty.}
+\emph{Behavioral embeddings provide the largest empirical gain by creating customer coordinates that preserve future propensity similarity. Neighborhood calibration adds smaller and less consistent gains, chiefly in propensity calibration. The refinement-frontier theorem provides a finite-sample recommendation-regret guarantee that identifies when better local matching outweighs the sampling uncertainty created by thinner neighborhoods.}
 \end{center}
-
-This simple fact connects representation, local evidence, and recommendation. Behavioral history can create coordinates that describe customers well. A propensity model turns those coordinates into one comparable score row per customer. Nested neighborhoods then show how much detail the observed evidence can sustain, while a finite-sample bound supplies a stopping rule and a confidence test for the final program choice.
-
-The experiments make this division of labor visible. Behavioral embeddings substantially improve future propensity estimates and program rankings, showing that the choice of coordinates matters most. Neighborhoods then sharpen local calibration and reveal when further refinement has too little support to justify changing the ranking. Practically, this theory-to-method package provides a disciplined way to learn customer coordinates, retrieve well-supported peers, and decide when local evidence is strong enough to alter or qualify a program recommendation.
 
 \section{From behavior to a propensity matrix}
 
@@ -136,6 +138,8 @@ where $U_D\in\mathbb R^{N\times D}$ and $V_D\in\mathbb R^{J\times D}$ contain cu
 \end{equation}
 Any supervised or unsupervised embedding may replace the factorization; what matters below is whether distance in its coordinates preserves future propensity similarity.
 
+This representation is the primary predictive layer. The neighborhood method introduced next is deliberately downstream: it asks whether historical customers close in the learned geometry can correct residual errors left by the propensity model.
+
 \begin{center}
 \begin{tikzpicture}[
   node distance=3.5mm,
@@ -159,7 +163,7 @@ Any supervised or unsupervised embedding may replace the factorization; what mat
 
 \section{Nested neighborhoods}
 
-Let $x$ now denote a target customer and let $x_1,\ldots,x_n$ denote $n$ historical reference customers, renumbered for convenience from the larger customer population. Choose a positive integer $M$ and order the available representation into $M$ blocks. Blocks may contain static attributes, groups of embedding coordinates, or groups of fitted propensity coordinates. Let $d_m(x,x')\geq0$ be the cumulative distance after the first $m$ blocks and require
+Once the base propensity row exists, the remaining question is how much detail a local correction can safely use. Let $x$ denote a target customer and let $x_1,\ldots,x_n$ denote $n$ historical reference customers, renumbered for convenience from the larger customer population. Choose a positive integer $M$ and order the available representation into $M$ blocks. Blocks may contain static attributes, groups of embedding coordinates, or groups of fitted propensity coordinates. Let $d_m(x,x')\geq0$ be the cumulative distance after the first $m$ blocks and require
 \[
  d_{m+1}(x,x')\geq d_m(x,x'),\qquad m=1,\ldots,M-1.
 \]
@@ -211,11 +215,11 @@ When calibrating a particular program $a$, a leave-one-program-out alternative u
  d_{-a}(x,x_i)=\max_{b\in\cA\setminus\{a\}}
  |\widetilde p_b(x)-\widetilde p_b(x_i)|.
 \]
-Both are available once $\widetilde P$ has been scored. Progressive groups of propensity coordinates also satisfy Proposition~\ref{prop:thin}.
+Both are available once $\widetilde P$ has been scored. Progressive groups of propensity coordinates also satisfy Proposition~\ref{prop:thin}. The two propositions now establish the geometric tradeoff: refinement cannot worsen the worst remaining match, but it can only preserve or reduce peer support. The next section converts that tradeoff into a statistical guarantee.
 
 \section{The refinement frontier}
 
-For reference customer $i\in\{1,\ldots,n\}$ and program $a\in\cA(x)$, let $Y_{ia}\in[0,B]$, where $B>0$, be a bounded calibration outcome satisfying $\E[Y_{ia}\mid x_i]=p_a(x_i)$. For binary enrollment, $B=1$. Historical fitted scores $\widetilde p_a(x_i)$ are computed out of fold or on a separate fitting sample. At level $m$, use the peers' mean residual to correct the target score:
+We now use local residual homogeneity to bound the error of the final program choice. For reference customer $i\in\{1,\ldots,n\}$ and program $a\in\cA(x)$, let $Y_{ia}\in[0,B]$, where $B>0$, be a bounded calibration outcome satisfying $\E[Y_{ia}\mid x_i]=p_a(x_i)$. For binary enrollment, $B=1$. Historical fitted scores $\widetilde p_a(x_i)$ are computed out of fold or on a separate fitting sample. At level $m$, use the peers' mean residual to correct the target score:
 \begin{equation}\label{eq:residual}
  \widehat p_{a,m}(x)=\widetilde p_a(x)
  +\frac{1}{n_m}\sum_{i\in\cN_m(x;r)}
@@ -259,6 +263,7 @@ The two terms move in opposite directions. Proposition~\ref{prop:mismatch} makes
  \left\{\widehat\varepsilon_m^\rho(x)
  +B\sqrt{\frac{\log(2K_xM/\alpha)}{2n_m}}\right\}.
 \end{equation}
+This minimizing level gives the title its operational meaning: the last useful feature block is the last refinement whose gain in local match quality is worth the peer support it spends.
 
 \begin{corollary}[A confident recommendation]\label{cor:margin}
 Assume $K_x\geq2$. On the event in Theorem~\ref{thm:frontier}, let $\widehat a_m$ have empirical lead
@@ -282,7 +287,7 @@ Cross-validation can select $\lambda$ before the test period. Corollary~\ref{cor
 
 \section{A recommender workflow}
 
-The mathematics fits into a six-step operating loop. Each step has an operational object and, where relevant, a formal guarantee.
+The three claims fit into a six-step operating loop: learn a useful representation, add local calibration only where it is supported, and use the guarantee to govern refinement and recommendation. Each step has an operational object and, where relevant, a formal guarantee.
 
 \begin{enumerate}[label=\textbf{\arabic*.},itemsep=.7ex]
 \item \textbf{Generate candidates and filter eligibility.} Construct the feasible program set before ranking:
@@ -345,7 +350,7 @@ The computation is naturally staged. Cheap coordinates screen the reference popu
 
 \section{Chronological evidence from KuaiRec}
 
-The framework was tested on KuaiRec, a nearly fully observed short-video recommendation dataset with 1,411 users and 3,327 items \cite{gao}. Video categories play the role of programs, and a customer's propensity for category $a$ is the fraction of its videos watched to completion. The twelve largest categories form the action set and supply a behavioral analogue of program enrollment.
+The empirical analysis evaluates the story in the same order: first the value of the behavioral representation, then the incremental value of neighborhood calibration, and finally the support loss predicted by the refinement frontier. The framework was tested on KuaiRec, a nearly fully observed short-video recommendation dataset with 1,411 users and 3,327 items \cite{gao}. Video categories play the role of programs, and a customer's propensity for category $a$ is the fraction of its videos watched to completion. The twelve largest categories form the action set and supply a behavioral analogue of program enrollment.
 
 Each user's interactions were ordered by time. The first 60\% formed the observable history $H$; the last 40\% formed future propensity targets. Within each of ten repeated outer splits, 60\% of users estimated ridge propensity models and out-of-fold residuals, 25\% tuned neighborhood choices, and 15\% were untouched test users. A 32-coordinate truncated-SVD embedding was fit using estimation histories only. Approximately 2.22 million early interactions built the representations and 1.48 million later interactions supplied outcomes. Operational comparisons used $k\in\{25,50,100,200\}$ nearest neighbors, where $k$ is the fixed peer count, and validation-selected residual shrinkage. This fixes peer support and complements the fixed-radius refinement studied by the theorem. RMSE averages coordinatewise error against the observed future category rates; top-1 regret is the future-rate difference between the best category and the recommended category; hit rate is the fraction for which those categories coincide.
 
@@ -373,11 +378,11 @@ Leave-one-program-out neighbors & 0.083833 & 0.037950 & 37.51\%\\
 \end{tabular}
 \end{center}
 
-The behavioral representation supplies the main gain. Relative to static customer features, adding the embedding reduces propensity RMSE by 31.9\%, reduces top-1 regret by 6.4\%, and raises the exact hit rate by 2.58 percentage points. RMSE improves in all ten splits, regret in eight, and hit rate in nine. This confirms the paper's central modeling premise: coordinates matter because they determine which customers can be meaningfully close.
+First, the behavioral representation supplies the main gain. Relative to static customer features, adding the embedding reduces propensity RMSE by 31.9\%, reduces top-1 regret by 6.4\%, and raises the exact hit rate by 2.58 percentage points. RMSE improves in all ten splits, regret in eight, and hit rate in nine. This confirms the paper's central modeling premise: useful coordinates capture future propensity similarity before any neighborhood correction is applied.
 
-The neighborhood experiments separate calibration from ranking. Embedding-space neighbors reduce regret by 6.8\% relative to static features across all ten splits, although their incremental gain over the embedding model is small. In the fresh propensity-space confirmation, full-row neighbors improve RMSE in nine of ten splits. They also show that better calibration need not change the winning program favorably: their mean regret is 2.2\% above the direct embedding ranker. Leave-one-program-out matching is less informative, which indicates that a program's own score is an important coordinate of propensity-space retrieval.
+Second, the neighborhood experiments separate calibration from ranking. Embedding-space neighbors reduce regret by 6.8\% relative to static features across all ten splits, although their incremental gain over the embedding model is small. In the fresh propensity-space confirmation, full-row neighbors improve RMSE in nine of ten splits. Better calibration does not necessarily produce a better winning program, however: mean regret is 2.2\% above the direct embedding ranker. Leave-one-program-out matching is less informative, indicating that a program's own score is an important coordinate of propensity-space retrieval. These results support neighborhood calibration as a modest correction layer, not as a replacement for the embedding model.
 
-An earlier static-feature pilot displayed the geometric mechanism directly. Deeper fixed-radius neighborhoods lost coverage and performance, while the support-aware rule selected the first three levels for 71.1\%, 17.7\%, and 11.2\% of customers and never selected the deepest level. Its certificate covered realized regret, though it was numerically loose. Taken together, the experiments give the theorem three concrete roles: reject unhelpful coordinate systems, stop refinements before support disappears, and gate score corrections by the recommendation margin.
+Third, an earlier static-feature pilot displayed the theorem's geometric mechanism directly. Deeper fixed-radius neighborhoods lost coverage and performance, while the support-aware rule selected the first three levels for 71.1\%, 17.7\%, and 11.2\% of customers and never selected the deepest level. Its finite-sample certificate covered realized regret, though it was numerically loose. The pilot illustrates the guarantee's practical roles: stop refinement before support disappears and gate score corrections by the recommendation margin. Taken together, the experiments recover the full narrative: the embedding supplies the large gain, neighborhood calibration supplies a smaller correction, and the theorem determines when that correction has adequate local support.
 
 \begin{center}
 \begin{tikzpicture}
@@ -438,16 +443,16 @@ An earlier static-feature pilot displayed the geometric mechanism directly. Deep
 \label{fig:experiments}
 \end{center}
 
-\section{Remarks on the result}
+\section{Interpretation and scope}
 
-The geometry is modest and useful: it identifies the price of asking for a closer match. Behavioral embeddings improve the propensity model because their coordinates preserve future preference. Propensity rows then provide a compact twelve-coordinate surface for cohort retrieval and local calibration. The margin certificate determines when that local evidence is strong enough to affect the recommendation.
+The empirical and theoretical results play different roles. Behavioral embeddings carry most of the predictive gain, while propensity neighborhoods provide a smaller local calibration layer. The theorem does not presume that every refinement helps. Its contribution is a finite-sample regret guarantee that exposes the price of asking for a closer match: better residual similarity must compensate for thinner peer support. The margin certificate then determines when that local evidence is strong enough to affect the recommendation.
 
 Enrollment propensity and causal value answer different questions. The present result concerns enrollment propensity. If the objective is incremental enrollment or energy savings, $p_a(x)$ can be replaced by an identified action-specific treatment effect under the corresponding assignment and policy-evaluation design \cite{dudik}. Customer targeting can materially affect program savings and cost effectiveness \cite{jones}.
 
-The propositions say exactly what refinement does. The theorem prices what it costs. The embedding and propensity matrix show where the method fits in a working recommender. The conclusion is the two-sentence summary with which the note began:
+The propositions say exactly what refinement does, and the theorem prices what it costs. The embedding and propensity matrix show where the method fits in a working recommender. Together, these pieces form an end-to-end workflow from eligibility and behavioral representation through propensity scoring and support-aware calibration to a certified recommendation or abstention. The argument therefore closes with the same three claims with which it began:
 
 \begin{center}
-\emph{Adding feature coordinates to a customer representation can only shrink its fixed-radius neighborhood. Useful refinement therefore requires coordinates that preserve propensity similarity and enough remaining peers for the gain in match quality to exceed sampling uncertainty.}
+\emph{Behavioral embeddings provide the largest empirical gain by creating customer coordinates that preserve future propensity similarity. Neighborhood calibration adds smaller and less consistent gains, chiefly in propensity calibration. The refinement-frontier theorem provides a finite-sample recommendation-regret guarantee that identifies when better local matching outweighs the sampling uncertainty created by thinner neighborhoods.}
 \end{center}
 
 \begin{thebibliography}{4}\footnotesize
