@@ -8,7 +8,7 @@ The primary output is the accessible edition of **Behavioral Embeddings and Prop
 - [Download the accessible PDF](papers/propensity-neighborhoods-accessible/propensity_neighborhood_accessible.pdf)
 - [Visit the project landing page](https://jonland82.github.io/energy-recommender-research/)
 
-Everything else in this repository—earlier notes, follow-up experiments, scripts, and machine-readable results—is supporting material for that paper.
+Everything else in this repository, including earlier notes, follow-up experiments, scripts, and machine-readable results, is supporting material for that paper.
 
 ## The story arc
 
