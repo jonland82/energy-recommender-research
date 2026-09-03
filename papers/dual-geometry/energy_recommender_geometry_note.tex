@@ -1,0 +1,237 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=.82in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{libertinus}
+\usepackage{microtype}
+\usepackage{mathtools,amssymb,amsthm}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{orcidlink}
+
+\colorlet{orcidlogocol}{black}
+\hypersetup{
+  pdftitle={When More Context Leaves Fewer Peers: Dual-Geometry Transfer for Energy Program Recommendation},
+  pdfauthor={J. R. Landers},
+  pdfsubject={Customer-neighborhood refinement, response transfer, and energy program recommendation},
+  pdfkeywords={recommender systems, energy programs, customer journeys, retrieval, causal inference, neighborhood geometry}
+}
+
+\setlength{\parindent}{1.05em}
+\setlength{\parskip}{0pt}
+\linespread{0.965}
+\setlength{\abovedisplayskip}{4pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{4pt plus 1pt minus 1pt}
+\setlist{nosep,leftmargin=1.45em}
+\setcounter{secnumdepth}{2}
+\titleformat{\section}{\large\bfseries\scshape}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.65em}{}
+\titlespacing*{\section}{0pt}{1.05ex plus .25ex}{.45ex}
+\titlespacing*{\subsection}{0pt}{.8ex plus .2ex}{.3ex}
+
+\newtheoremstyle{noteplain}{.55ex}{.55ex}{\itshape}{}{\bfseries}{.}{.5em}{}
+\theoremstyle{noteplain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item[\hskip\labelsep\bfseries #1\@addpunct{.}]\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+\makeatother
+
+\newcommand{\E}{\mathbb E}
+\newcommand{\Prb}{\mathbb P}
+\newcommand{\cA}{\mathcal A}
+\newcommand{\cN}{\mathcal N}
+\newcommand{\cX}{\mathcal X}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\scshape Dual-Geometry Energy Recommendation}
+\fancyhead[R]{\footnotesize J. R. Landers}
+\fancyfoot[C]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.35pt}
+\setlength{\headheight}{14pt}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries When More Context Leaves Fewer Peers\par}
+  \vspace{0.1em}
+  {\Large Dual-Geometry Transfer for Energy Program Recommendation\par}
+  \vspace{0.35em}
+  {\large J. R. Landers\,\orcidlink{0000-0003-1872-6179}\par}
+  \vspace{0.08em}
+  {\small September 2026}
+\end{center}
+
+\vspace{0.1em}
+\section{The question inside the customer record}
+
+A utility may know a household's premise type, demographics, interval usage, seasonal load shape, prior contacts, and preferred channel.  More context seems to make personalization easier.  It also makes exact peers rarer.  A customer can be close to another in observed profile space and far away in the space that matters operationally: response to weatherization, demand response, rate plans, electrification incentives, payment programs, or the channel through which any of them is offered.
+
+This note treats program recommendation as transfer between two geometries.  The \emph{profile geometry} describes who appears similar before an intervention.  The \emph{response geometry} describes which program--channel actions have similar incremental effects.  The distinction parallels the separation between theorem-statement neighborhoods and proof-strategy neighborhoods in retrieval-guided theorem proving \cite{landerslean,yang}.  It also inherits a simple relational fact: appending nonnegative distinguishing coordinates can only thin a fixed-radius neighborhood \cite{landersshape}.
+
+The new point is decision-theoretic.  Refinement trades response fidelity against statistical support, and that trade can be certified.  The certificate below bounds the regret of peer-transfer recommendation and supplies an operational rule for deciding how much customer context to use.
+
+\section{Two geometries and a refinement filtration}
+
+Let $x\in\cX$ denote a target customer and let $\cA(x)$ be the finite set of program--channel actions for which the customer is eligible.  Static eligibility, regulatory rules, contact permissions, and program capacity belong in $\cA(x)$ rather than in the learned score.  Let
+\[
+ d_m(x,x')=\sum_{j=1}^{m}\delta_j(x,x'),\qquad \delta_j\geq0,
+\]
+be a profile distance after $m$ feature blocks.  Blocks might add premise attributes, usage summaries, load-shape embeddings, weather residuals, and interaction history in that order.  For radius $r$ define the peer set
+\[
+ \cN_m(x;r)=\{i:d_m(x,x_i)\leq r\}.
+\]
+
+\begin{proposition}[Customer-neighborhood thinning]\label{prop:thin}
+For every $x,r$, the profile neighborhoods form a descending filtration,
+\[
+ \cN_{m+1}(x;r)\subseteq\cN_m(x;r).
+\]
+Consequently their empirical mass cannot increase, and the isolation information
+\[
+ C_m(x;r)=-\log_2\frac{|\cN_m(x;r)|}{n}
+\]
+cannot decrease while the neighborhood is nonempty.
+\end{proposition}
+
+\begin{proof}
+Because $d_{m+1}=d_m+\delta_{m+1}\geq d_m$, membership at level $m+1$ implies membership at level $m$.  Cardinality and the logarithmic statement follow.
+\end{proof}
+
+The proposition is elementary but consequential.  Every refinement spends peer support.  Whether that purchase is worthwhile depends on a second space.  Let $z(x)\in(\mathcal Z,d_Z)$ be a latent response state and write the incremental utility of action $a$ as
+\[
+ u_a(x)=f_a(z(x)).
+\]
+Utility may combine incremental enrollment, verified energy savings or peak reduction, customer benefit, delivery cost, and a capacity shadow price.  It is not the observed enrollment rate: historical offers were selected by earlier policies.
+
+For uniform retrieval from $\cN_m=\cN_m(x;r)$, define the cross-geometry radius
+\[
+ \varepsilon_m(x)=\max_{i\in\cN_m}d_Z(z(x),z(x_i)).
+\]
+Because the peer sets are nested, $\varepsilon_m$ cannot increase.  Thus refinement improves the worst response match while reducing sample size.  Neither profile distance alone nor response similarity alone displays both sides of this frontier.
+
+\section{A peer-transfer regret certificate}
+
+Suppose each historical peer supplies a bounded pseudo-outcome $Y_{ia}\in[0,B]$ for every $a\in\cA(x)$, with
+\[
+ \E[Y_{ia}\mid x_i]=u_a(x_i).
+\]
+In observational data this can be an inverse-propensity or doubly robust pseudo-outcome; in a randomized pilot it can be constructed directly.  Put
+\[
+ \widehat u_{a,m}(x)=\frac1{n_m}\sum_{i\in\cN_m}Y_{ia},\qquad
+ \widehat a_m\in\argmax_{a\in\cA(x)}\widehat u_{a,m}(x),
+\]
+where $n_m=|\cN_m|$, and let $a^*\in\argmax_a u_a(x)$.
+
+\begin{theorem}[Dual-geometry transfer frontier]\label{thm:frontier}
+Assume the peer pseudo-outcomes are conditionally independent and every $f_a$ is $L$-Lipschitz on $(\mathcal Z,d_Z)$.  For $K=|\cA(x)|$ and a prespecified refinement level $m$, with probability at least $1-\alpha$,
+\begin{equation}\label{eq:certificate}
+ u_{a^*}(x)-u_{\widehat a_m}(x)
+ \leq
+ 2L\varepsilon_m(x)
+ +2B\sqrt{\frac{\log(2K/\alpha)}{2n_m}}
+ \qquad\text{simultaneously over }a\in\cA(x).
+\end{equation}
+If one refinement level is selected after inspecting the same outcomes, replace $K$ by $KM$ for $M$ candidate levels.  The leading factor $2$ cannot generally be improved from a uniform action-value error bound alone.
+\end{theorem}
+
+\begin{proof}
+Let $\bar u_{a,m}=n_m^{-1}\sum_{i\in\cN_m}u_a(x_i)$.  Lipschitzness gives
+\[
+ |\bar u_{a,m}-u_a(x)|\leq L\varepsilon_m.
+\]
+Hoeffding's inequality and a union bound over $K$ actions give, simultaneously in $a$,
+\[
+ |\widehat u_{a,m}-\bar u_{a,m}|
+ \leq B\sqrt{\frac{\log(2K/\alpha)}{2n_m}}=:q_m.
+\]
+Hence $|\widehat u_{a,m}-u_a(x)|\leq L\varepsilon_m+q_m=:b_m$.  Since $\widehat a_m$ maximizes the estimated value,
+\[
+ u_{a^*}-u_{\widehat a_m}
+ \leq (u_{a^*}-\widehat u_{a^*})
+ +(\widehat u_{\widehat a_m}-u_{\widehat a_m})\leq2b_m.
+\]
+Union bounding over $M$ levels proves the selection statement.  Two actions whose estimates tie while their true values differ by $2b_m$ attain the final factor.
+\end{proof}
+
+The bound exposes the frontier.  The geometric term $L\varepsilon_m$ falls as the representation becomes more response-specific; the support term scales as $n_m^{-1/2}$ and rises as peers disappear.  The certified refinement rule is therefore
+\begin{equation}\label{eq:selection}
+ \widehat m(x)\in\argmin_m
+ \left\{\widehat L\widehat\varepsilon_m(x)
+ +B\sqrt{\frac{\log(2KM/\alpha)}{2n_m}}\right\}.
+\end{equation}
+This is personalized model selection: a common residential customer may support deep refinement, while a rare commercial or vulnerable-customer profile should stop earlier or abstain.
+
+\begin{remark}[Why the second geometry is indispensable]
+No nontrivial version of \eqref{eq:certificate} follows from profile closeness alone.  At arbitrarily small $d_m$, two customers may have opposite response rankings unless profile neighborhoods are known to transfer into response neighborhoods.  Estimating $\varepsilon_m$, or a probabilistic analogue of it, is therefore part of the recommender rather than a visualization step.
+\end{remark}
+
+\section{Applied mechanisms for a utility recommender}
+
+The theorem suggests a concrete architecture.
+
+\paragraph{Candidate generation.}
+Apply eligibility and compliance rules first.  An action is a program--channel pair such as demand response through mobile, a rate-plan consultation through the call center, or an efficiency rebate through web.  Capacity constraints can enter as action prices or a downstream allocation layer.
+
+\paragraph{Dual representation.}
+Learn the profile view from information available at decision time.  Learn the response view from cross-fitted causal pseudo-outcomes across actions.  The central diagnostic compares profile-neighbor overlap with response-neighbor overlap.  High profile similarity with poor response transfer is precisely where an ordinary nearest-neighbor or segmentation system is overconfident.
+
+\paragraph{Journey compatibility.}
+Let $W_t(\gamma)\in[0,1]$ weight a candidate response journey $\gamma$ after contacts through time $t$.  If new evidence only removes incompatible journeys, $W_{t+1}\leq W_t$, so
+\[
+ Z_t=\int W_t(\gamma)\,d\mu(\gamma)\quad\text{decreases},\qquad
+ C_t=-\log_2 Z_t\quad\text{increases}.
+\]
+This compatible-history mechanism turns clicks, refusals, enrollments, and post-program load changes into a monotone uncertainty audit.  Preference drift or changing eligibility breaks monotonicity and should trigger a new episode rather than be disguised as evidence.
+
+\paragraph{Evaluation.}
+A publishable case study needs impression-level records: eligible actions, displayed action, channel, time, historical propensity, response, and subsequent usage.  Temporal splits should compare segmentation, supervised ranking, uplift ranking, and dual-geometry retrieval.  Primary outcomes are incremental enrollment, verified savings or peak reduction, customer benefit, cost per incremental success, abstention coverage, and subgroup calibration.  Demographic variables should be separated into lawful eligibility inputs, predictive inputs, and audit-only attributes; maximizing uptake without this separation can quietly ration beneficial programs.
+
+\section{What would be new}
+
+Energy-program targeting has shown that customer selection can materially change savings and cost effectiveness \cite{jones}, while contextual-bandit work supplies tools for evaluation under logged policies \cite{dudik}.  The frontier here is different: it makes the transferability of peer evidence a first-class geometric object and charges personalization for the support it destroys.
+
+Theorem~\ref{thm:frontier} is the central new claim.  Proposition~\ref{prop:thin} supplies its representation filtration; compatible journeys supply its sequential extension.  A Duke Energy case study could then test three questions that ordinary ranking metrics miss: when does added context improve response transfer, where does it isolate customers too quickly, and can the certificate identify when the system should stop refining or abstain?  The result would be a recommender-system contribution with an energy application, rather than an energy segmentation exercise with recommender language added afterward.
+
+\begin{thebibliography}{6}\footnotesize
+\setlength{\itemsep}{.15ex}
+\setlength{\parskip}{0pt}
+
+\bibitem{landerslean}
+J. R. Landers, ``What statements know, what proofs do'' and ``The infrastructure--isolation principle,'' in \emph{LeanDojo Experiments}, 2026. \href{https://github.com/jonland82/leandojo-experiments}{Project repository}.
+
+\bibitem{landersshape}
+J. R. Landers, ``The relational shape of structural complexity and neighborhood density,'' 2026. \href{https://github.com/jonland82/compatible-histories}{Project repository}.
+
+\bibitem{yang}
+K. Yang, A. M. Swope, A. Gu, R. Chalamala, P. Song, S. Yu, S. Godil, R. J. Prenger, and A. Anandkumar, ``LeanDojo: Theorem proving with retrieval-augmented language models,'' in \emph{NeurIPS Datasets and Benchmarks}, 2023.
+
+\bibitem{jones}
+N. W. Taylor, P. H. Jones, and M. J. Kipp, ``Targeting utility customers to improve energy savings from conservation and efficiency programs,'' \emph{Applied Energy}, 115:25--36, 2014.
+
+\bibitem{dudik}
+M. Dud\'{i}k, J. Langford, and L. Li, ``Doubly robust policy evaluation and learning,'' in \emph{Proc. ICML}, pp. 1097--1104, 2011.
+
+\bibitem{agarwal}
+D. Agarwal, B.-C. Chen, and P. Elango, ``Explore/exploit schemes for web content optimization,'' in \emph{Proc. ICDM}, pp. 1--10, 2009.
+
+\end{thebibliography}
+
+\end{document}

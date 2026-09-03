@@ -1,0 +1,322 @@
+{
+  "seed": 20260903,
+  "runtime_seconds": 4.771433900001284,
+  "users": 1411,
+  "estimation_users": 846,
+  "metric_users": 141,
+  "validation_users": 211,
+  "test_users": 213,
+  "completion_threshold": 1.0,
+  "completion_rate": 0.3335975706577301,
+  "categories": [
+    1,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12,
+    15,
+    19,
+    25,
+    28
+  ],
+  "feature_blocks": [
+    [
+      "user_active_degree",
+      "is_lowactive_period",
+      "register_days",
+      "register_days_range"
+    ],
+    [
+      "is_live_streamer",
+      "is_video_author"
+    ],
+    [
+      "follow_user_num",
+      "follow_user_num_range",
+      "fans_user_num",
+      "fans_user_num_range",
+      "friend_user_num",
+      "friend_user_num_range"
+    ],
+    [
+      "onehot_feat0",
+      "onehot_feat1",
+      "onehot_feat2",
+      "onehot_feat3",
+      "onehot_feat4",
+      "onehot_feat5",
+      "onehot_feat6",
+      "onehot_feat7",
+      "onehot_feat8",
+      "onehot_feat9",
+      "onehot_feat10",
+      "onehot_feat11",
+      "onehot_feat12",
+      "onehot_feat13",
+      "onehot_feat14",
+      "onehot_feat15",
+      "onehot_feat16",
+      "onehot_feat17"
+    ]
+  ],
+  "k_grid": [
+    25,
+    50,
+    100,
+    200
+  ],
+  "shrinkage_grid": [
+    0.0,
+    20.0,
+    50.0,
+    100.0,
+    200.0,
+    1000000000.0
+  ],
+  "shared_selection": {
+    "geometry": "block_3",
+    "k": 25,
+    "shrinkage": 0.0
+  },
+  "program_selections": [
+    {
+      "category": 1,
+      "k": 200,
+      "shrinkage": 100.0,
+      "validation_mse": 0.01311731232412168,
+      "block_weights": [
+        0.025,
+        0.23104311130875907,
+        0.718956888691241,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.013941350860112047,
+        0.013862046679025956,
+        0.013763445980580337,
+        0.01420549879104251
+      ]
+    },
+    {
+      "category": 5,
+      "k": 200,
+      "shrinkage": 100.0,
+      "validation_mse": 0.013798265357674205,
+      "block_weights": [
+        0.025,
+        0.026582704320980487,
+        0.9234172956790195,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.013031108268804279,
+        0.012885556759453846,
+        0.012692895932189583,
+        0.01303223451734573
+      ]
+    },
+    {
+      "category": 6,
+      "k": 25,
+      "shrinkage": 100.0,
+      "validation_mse": 0.009143822679152295,
+      "block_weights": [
+        0.025,
+        0.5180026126667884,
+        0.4319973873332117,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.009708651983286474,
+        0.009554560160733961,
+        0.009577563512665364,
+        0.010010322909939237
+      ]
+    },
+    {
+      "category": 7,
+      "k": 50,
+      "shrinkage": 1000000000.0,
+      "validation_mse": 0.013755960476349242,
+      "block_weights": [
+        0.025,
+        0.025,
+        0.925,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.013993108608937656,
+        0.0142067518686474,
+        0.013889004649338626,
+        0.014021982991315837
+      ]
+    },
+    {
+      "category": 8,
+      "k": 25,
+      "shrinkage": 200.0,
+      "validation_mse": 0.011684464249865701,
+      "block_weights": [
+        0.025,
+        0.32825487775134016,
+        0.62174512224866,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.011084705927751114,
+        0.011030577669968603,
+        0.011001111670847745,
+        0.011247002217717005
+      ]
+    },
+    {
+      "category": 9,
+      "k": 200,
+      "shrinkage": 0.0,
+      "validation_mse": 0.011170942885540302,
+      "block_weights": [
+        0.025,
+        0.875733992221601,
+        0.07426600777839906,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.011025076317693823,
+        0.010842249323848342,
+        0.010963395744342706,
+        0.011272578573330388
+      ]
+    },
+    {
+      "category": 11,
+      "k": 200,
+      "shrinkage": 1000000000.0,
+      "validation_mse": 0.011305751543718252,
+      "block_weights": [
+        0.025,
+        0.025,
+        0.925,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.010841470694490596,
+        0.01082461992012765,
+        0.010718445466189112,
+        0.010956120097752538
+      ]
+    },
+    {
+      "category": 12,
+      "k": 200,
+      "shrinkage": 200.0,
+      "validation_mse": 0.0051700909582971955,
+      "block_weights": [
+        0.025,
+        0.80340085081868,
+        0.14659914918132008,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.004743858729637089,
+        0.004625925110741472,
+        0.004678486552061439,
+        0.004769290068422525
+      ]
+    },
+    {
+      "category": 15,
+      "k": 25,
+      "shrinkage": 200.0,
+      "validation_mse": 0.012181685626615073,
+      "block_weights": [
+        0.025,
+        0.925,
+        0.025,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.012770134659968516,
+        0.012738001179882493,
+        0.012852992586368846,
+        0.012857213248567066
+      ]
+    },
+    {
+      "category": 19,
+      "k": 200,
+      "shrinkage": 0.0,
+      "validation_mse": 0.013068884675277389,
+      "block_weights": [
+        0.925,
+        0.025,
+        0.025,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.012863466372805167,
+        0.012979956451285852,
+        0.012952476108796178,
+        0.013097422532361255
+      ]
+    },
+    {
+      "category": 25,
+      "k": 200,
+      "shrinkage": 0.0,
+      "validation_mse": 0.01346900300619806,
+      "block_weights": [
+        0.025,
+        0.925,
+        0.025,
+        0.025
+      ],
+      "block_metric_mse": [
+        0.012598910810303315,
+        0.01228605591414607,
+        0.012522327560996029,
+        0.01271369995299322
+      ]
+    },
+    {
+      "category": 28,
+      "k": 200,
+      "shrinkage": 200.0,
+      "validation_mse": 0.01261380222878877,
+      "block_weights": [
+        0.25,
+        0.25,
+        0.25,
+        0.25
+      ],
+      "block_metric_mse": [
+        0.011354663916857962,
+        0.011396881901319439,
+        0.01130632653461127,
+        0.011378134181770373
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "method": "base_ridge",
+      "rmse": 0.11051712794790707,
+      "top1_regret": 0.019327417016029358,
+      "top1_hit_rate": 0.4835680751173709
+    },
+    {
+      "method": "globally_tuned_shared_knn",
+      "rmse": 0.11095111721522956,
+      "top1_regret": 0.020543191581964493,
+      "top1_hit_rate": 0.4835680751173709
+    },
+    {
+      "method": "program_specific_knn",
+      "rmse": 0.11057940504214729,
+      "top1_regret": 0.019075904041528702,
+      "top1_hit_rate": 0.49765258215962443
+    }
+  ]
+}

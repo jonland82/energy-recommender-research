@@ -1,0 +1,135 @@
+{
+  "seed": 20260904,
+  "runtime_seconds": 4.135556900000665,
+  "users": 1411,
+  "train_users": 846,
+  "reference_users": 282,
+  "test_users": 283,
+  "input_interactions": 4676570,
+  "analyzed_interactions": 3697509,
+  "catalog_videos_in_selected_categories": 8613,
+  "analyzed_videos": 2632,
+  "completion_rate": 0.3335975706577301,
+  "selected_categories": [
+    1,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12,
+    15,
+    19,
+    25,
+    28
+  ],
+  "category_count": 12,
+  "feature_blocks": [
+    [
+      "user_active_degree",
+      "is_lowactive_period",
+      "register_days",
+      "register_days_range"
+    ],
+    [
+      "is_live_streamer",
+      "is_video_author"
+    ],
+    [
+      "follow_user_num",
+      "follow_user_num_range",
+      "fans_user_num",
+      "fans_user_num_range",
+      "friend_user_num",
+      "friend_user_num_range"
+    ],
+    [
+      "onehot_feat0",
+      "onehot_feat1",
+      "onehot_feat2",
+      "onehot_feat3",
+      "onehot_feat4",
+      "onehot_feat5",
+      "onehot_feat6",
+      "onehot_feat7",
+      "onehot_feat8",
+      "onehot_feat9",
+      "onehot_feat10",
+      "onehot_feat11",
+      "onehot_feat12",
+      "onehot_feat13",
+      "onehot_feat14",
+      "onehot_feat15",
+      "onehot_feat16",
+      "onehot_feat17"
+    ]
+  ],
+  "radius_quantile": 0.12,
+  "radius": 2.0408683425368874,
+  "alpha": 0.1,
+  "calibration": "residual",
+  "shrinkage": 20.0,
+  "mismatch_quantile": 1.0,
+  "completion_threshold": 1.0,
+  "block_order": "standard",
+  "adaptive_level_counts": {
+    "1": 256,
+    "2": 7,
+    "3": 20,
+    "4": 0
+  },
+  "adaptive_certificate_coverage": 1.0,
+  "adaptive_mean_certificate": 1.1566982211510795,
+  "adaptive_nonvacuous_certificate_fraction": 0.1166077738515901,
+  "adaptive_oracle_level_match": 0.9363957597173145,
+  "metrics": [
+    {
+      "method": "base_ridge",
+      "rmse": 0.10348478227742745,
+      "top1_regret": 0.019549420103430748,
+      "top1_hit_rate": 0.48056537102473496
+    },
+    {
+      "method": "fixed_level_1_base_fallback",
+      "rmse": 0.10387690365314484,
+      "top1_regret": 0.01851053722202778,
+      "top1_hit_rate": 0.49469964664310956,
+      "coverage": 1.0,
+      "mean_support": 252.80565371024736
+    },
+    {
+      "method": "fixed_level_2_base_fallback",
+      "rmse": 0.10351986438035965,
+      "top1_regret": 0.01851053722202778,
+      "top1_hit_rate": 0.49469964664310956,
+      "coverage": 1.0,
+      "mean_support": 230.0600706713781
+    },
+    {
+      "method": "fixed_level_3_base_fallback",
+      "rmse": 0.10356193780899048,
+      "top1_regret": 0.01829543709754944,
+      "top1_hit_rate": 0.49823321554770317,
+      "coverage": 0.9823321554770318,
+      "mean_support": 133.9388489208633
+    },
+    {
+      "method": "fixed_level_4_base_fallback",
+      "rmse": 0.10813304781913757,
+      "top1_regret": 0.01954840123653412,
+      "top1_hit_rate": 0.49823321554770317,
+      "coverage": 0.8904593639575972,
+      "mean_support": 38.00396825396825
+    },
+    {
+      "method": "adaptive_theorem_rule",
+      "rmse": 0.10378766059875488,
+      "top1_regret": 0.01851053722202778,
+      "top1_hit_rate": 0.49469964664310956,
+      "coverage": 1.0,
+      "mean_support": 245.4310954063604,
+      "mean_level": 1.1660777385159011
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "seed": 20260911,
+  "runtime_seconds": 8.212180800001079,
+  "users": 1411,
+  "estimation_users": 846,
+  "tuning_users": 352,
+  "test_users": 213,
+  "history_fraction": 0.6,
+  "history_interactions": 2217945,
+  "future_interactions": 1479564,
+  "embedding_dimensions": 16,
+  "embedding_explained_variance": 0.17890463597277176,
+  "shared_selection": {
+    "distance": "euclidean",
+    "k": 200,
+    "shrinkage": 0.0
+  },
+  "program_selections": [
+    {
+      "category": 1,
+      "distance": "cosine",
+      "k": 25,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.0072692450511690635
+    },
+    {
+      "category": 5,
+      "distance": "cosine",
+      "k": 50,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.012103428186815084
+    },
+    {
+      "category": 6,
+      "distance": "cosine",
+      "k": 50,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.003297496931321898
+    },
+    {
+      "category": 7,
+      "distance": "cosine",
+      "k": 50,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.008850659128153969
+    },
+    {
+      "category": 8,
+      "distance": "cosine",
+      "k": 50,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.0064918139794436025
+    },
+    {
+      "category": 9,
+      "distance": "cosine",
+      "k": 50,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.008162631699065974
+    },
+    {
+      "category": 11,
+      "distance": "cosine",
+      "k": 25,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.006532985824597926
+    },
+    {
+      "category": 12,
+      "distance": "cosine",
+      "k": 50,
+      "shrinkage": 20.0,
+      "tuning_mse": 0.003265924935188594
+    },
+    {
+      "category": 15,
+      "distance": "euclidean",
+      "k": 25,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.009159670587030782
+    },
+    {
+      "category": 19,
+      "distance": "cosine",
+      "k": 100,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.01122295098940073
+    },
+    {
+      "category": 25,
+      "distance": "cosine",
+      "k": 50,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.011460146969444278
+    },
+    {
+      "category": 28,
+      "distance": "cosine",
+      "k": 50,
+      "shrinkage": 0.0,
+      "tuning_mse": 0.006998110837247228
+    }
+  ],
+  "residual_diagnostic": [
+    {
+      "distance": "euclidean",
+      "base_rmse": 0.08876646849789471,
+      "corrected_rmse": 0.0887651004471075
+    },
+    {
+      "distance": "cosine",
+      "base_rmse": 0.08876646849789471,
+      "corrected_rmse": 0.08884669096917941
+    }
+  ],
+  "metrics": [
+    {
+      "method": "static_base",
+      "rmse": 0.13161952397341736,
+      "top1_regret": 0.042037490755319595,
+      "top1_hit_rate": 0.3145539906103286
+    },
+    {
+      "method": "static_plus_svd",
+      "rmse": 0.09054187293546917,
+      "top1_regret": 0.039155468344688416,
+      "top1_hit_rate": 0.323943661971831
+    },
+    {
+      "method": "static_svd_plus_history_rates",
+      "rmse": 0.08929903618606876,
+      "top1_regret": 0.038883600383996964,
+      "top1_hit_rate": 0.3333333333333333
+    },
+    {
+      "method": "embedding_shared_knn",
+      "rmse": 0.0909587050906763,
+      "top1_regret": 0.038627248257398605,
+      "top1_hit_rate": 0.3427230046948357
+    },
+    {
+      "method": "embedding_program_specific_knn",
+      "rmse": 0.08958337583796312,
+      "top1_regret": 0.03732356056571007,
+      "top1_hit_rate": 0.323943661971831
+    }
+  ]
+}

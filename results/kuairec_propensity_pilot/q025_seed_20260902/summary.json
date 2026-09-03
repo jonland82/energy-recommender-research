@@ -1,0 +1,122 @@
+{
+  "seed": 20260902,
+  "runtime_seconds": 3.758565699994506,
+  "users": 1411,
+  "train_users": 846,
+  "reference_users": 282,
+  "test_users": 283,
+  "selected_categories": [
+    1,
+    5,
+    6,
+    7,
+    8,
+    9,
+    11,
+    12,
+    15,
+    19,
+    25,
+    28
+  ],
+  "category_count": 12,
+  "feature_blocks": [
+    [
+      "user_active_degree",
+      "is_lowactive_period",
+      "register_days",
+      "register_days_range"
+    ],
+    [
+      "is_live_streamer",
+      "is_video_author"
+    ],
+    [
+      "follow_user_num",
+      "follow_user_num_range",
+      "fans_user_num",
+      "fans_user_num_range",
+      "friend_user_num",
+      "friend_user_num_range"
+    ],
+    [
+      "onehot_feat0",
+      "onehot_feat1",
+      "onehot_feat2",
+      "onehot_feat3",
+      "onehot_feat4",
+      "onehot_feat5",
+      "onehot_feat6",
+      "onehot_feat7",
+      "onehot_feat8",
+      "onehot_feat9",
+      "onehot_feat10",
+      "onehot_feat11",
+      "onehot_feat12",
+      "onehot_feat13",
+      "onehot_feat14",
+      "onehot_feat15",
+      "onehot_feat16",
+      "onehot_feat17"
+    ]
+  ],
+  "radius_quantile": 0.25,
+  "radius": 2.585745457473611,
+  "alpha": 0.1,
+  "adaptive_level_counts": {
+    "1": 154,
+    "2": 9,
+    "3": 118,
+    "4": 2
+  },
+  "adaptive_certificate_coverage": 1.0,
+  "metrics": [
+    {
+      "method": "base_ridge",
+      "rmse": 0.10906889120858969,
+      "top1_regret": 0.019778426736593246,
+      "top1_hit_rate": 0.49469964664310956
+    },
+    {
+      "method": "fixed_level_1",
+      "rmse": 0.10838757455348969,
+      "top1_regret": 0.018786519765853882,
+      "top1_hit_rate": 0.4876325088339223,
+      "coverage": 1.0,
+      "mean_support": 275.2155477031802
+    },
+    {
+      "method": "fixed_level_2",
+      "rmse": 0.10847114026546478,
+      "top1_regret": 0.018801603466272354,
+      "top1_hit_rate": 0.4911660777385159,
+      "coverage": 1.0,
+      "mean_support": 266.51943462897526
+    },
+    {
+      "method": "fixed_level_3",
+      "rmse": 0.10776619613170624,
+      "top1_regret": 0.019282488152384758,
+      "top1_hit_rate": 0.4856115107913669,
+      "coverage": 0.9823321554770318,
+      "mean_support": 195.5791366906475
+    },
+    {
+      "method": "fixed_level_4",
+      "rmse": 0.11069202423095703,
+      "top1_regret": 0.020110897719860077,
+      "top1_hit_rate": 0.4835164835164835,
+      "coverage": 0.9646643109540636,
+      "mean_support": 73.08424908424908
+    },
+    {
+      "method": "adaptive_theorem_rule",
+      "rmse": 0.10798462480306625,
+      "top1_regret": 0.018786519765853882,
+      "top1_hit_rate": 0.4876325088339223,
+      "coverage": 1.0,
+      "mean_support": 251.7809187279152,
+      "mean_level": 1.8869257950530036
+    }
+  ]
+}

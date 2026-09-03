@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Public datasets are preserved locally but not committed
+/data/kuairec/
+
+# LaTeX build and visual-inspection artifacts
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+compile-pass*.txt
+page-*.png
+preview-*.png
+revised-*.png
+final-*.png
+flowcheck-*.png
+notation-*.png
+plotcheck-*.png
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
