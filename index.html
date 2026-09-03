@@ -175,7 +175,7 @@
   <main id="main">
     <section class="hero" id="top">
       <div>
-        <p class="project-intro">Utilities need to choose the right eligible program for each customer. This project tests whether behavioral history and local prediction errors can improve that choice—and when the evidence is too thin to trust.</p>
+        <p class="project-intro">Utilities need to choose the right eligible program for each customer. This project tests whether behavioral history and local prediction errors can improve that choice. It also identifies when the evidence is too thin to trust.</p>
         <p class="eyebrow">Program recommendation · calibration · reliability</p>
         <h1>When should local evidence <span>change the recommendation?</span></h1>
         <p class="lede">Behavioral embeddings reveal what customers are likely to choose. Propensity neighborhoods ask a harder second question: is the nearby evidence strong enough to trust?</p>
@@ -205,7 +205,7 @@
       <div class="section-head"><p class="eyebrow">The story arc</p><h2 id="arc-title">From behavioral signal to an honest decision.</h2><p>Each step solves one problem and exposes the next. The empirical result gives the three steps distinct jobs.</p></div>
       <div class="arc-grid">
         <article class="arc-card" data-step="1"><p class="card-label">Represent</p><h3>Behavior creates the geometry.</h3><p>Compress pre-decision activity into an embedding, combine it with ordinary customer attributes, and estimate enrollment propensity for every eligible program.</p><p class="turn">This is where the main predictive gain appears.</p></article>
-        <article class="arc-card" data-step="2"><p class="card-label">Refine</p><h3>Specificity spends support.</h3><p>Add matching dimensions to find more relevant peers. The remaining neighbors become more alike—but every refinement can only reduce their number.</p><p class="turn">A better match arrives with greater uncertainty.</p></article>
+        <article class="arc-card" data-step="2"><p class="card-label">Refine</p><h3>Specificity spends support.</h3><p>Add matching dimensions to find more relevant peers. The remaining neighbors become more alike, but every refinement can only reduce their number.</p><p class="turn">A better match arrives with greater uncertainty.</p></article>
         <article class="arc-card" data-step="3"><p class="card-label">Decide</p><h3>The frontier governs trust.</h3><p>Balance residual mismatch against finite-sample uncertainty. Correct when supported; otherwise keep the direct ranking or flag low confidence.</p><p class="turn">The theory makes restraint part of the method.</p></article>
       </div>
     </section>
