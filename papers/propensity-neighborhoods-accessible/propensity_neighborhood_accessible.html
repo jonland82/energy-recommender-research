@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Behavioral Embeddings and Propensity Neighborhoods for Program Recommendation</title>
+<meta name="description" content="Accessible HTML edition: behavioral embeddings, propensity neighborhoods, calibration, and program recommendation.">
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['\\[', '\\]']],
+      tags: 'ams',
+      macros: {
+        E: '{\\mathbb{E}}',
+        cA: '{\\mathcal{A}}',
+        cN: '{\\mathcal{N}}',
+        argmax: '\\operatorname*{arg\\,max}',
+        argmin: '\\operatorname*{arg\\,min}'
+      }
+    },
+    options: { renderActions: { assistiveMml: [] } }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  /* ---- Libertinus Serif: the same family the PDF is set in ---- */
+  @font-face{
+    font-family:'Libertinus Serif';
+    font-style:normal; font-weight:400; font-display:swap;
+    src:local('Libertinus Serif'), local('Linux Libertine O'),
+        url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/files/libertinus-serif-latin-400-normal.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Libertinus Serif';
+    font-style:normal; font-weight:700; font-display:swap;
+    src:local('Libertinus Serif Bold'),
+        url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/files/libertinus-serif-latin-700-normal.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Libertinus Serif';
+    font-style:italic; font-weight:400; font-display:swap;
+    src:local('Libertinus Serif Italic'),
+        url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/files/libertinus-serif-latin-400-italic.woff2') format('woff2');
+  }
+  @font-face{
+    font-family:'Libertinus Serif';
+    font-style:italic; font-weight:700; font-display:swap;
+    src:local('Libertinus Serif Bold Italic'),
+        url('https://cdn.jsdelivr.net/npm/@fontsource/libertinus-serif@5/files/libertinus-serif-latin-700-italic.woff2') format('woff2');
+  }
+
+  :root{
+    --ink:#263238;      /* tikz box stroke, as in the preamble */
+    --blue:#356A8A;     /* tikz arrows */
+    --pale:#EDF3F6;     /* tikz box fill */
+    --text:#000000;     /* body ink: the PDF sets type in black */
+    --rule:#000000;
+    --desk:#e8e9eb;     /* backdrop the sheet sits on */
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+
+  body{
+    margin:0;
+    background:var(--desk);
+    color:var(--text);
+    font-family:'Libertinus Serif','Linux Libertine O','STIX Two Text',Georgia,'Times New Roman',serif;
+    font-size:16.5px;
+    line-height:1.25;              /* 10pt on ~11.5pt baseline: linespread 0.96 */
+    overflow-x:hidden;
+    text-rendering:optimizeLegibility;
+    font-kerning:normal;
+  }
+
+  /* ---- the sheet: 8.5in page proportions, .76in margins ---- */
+  .sheet{
+    width:800px;
+    max-width:100%;
+    margin:26px auto;
+    background:#fff;
+    border:1px solid #d7d9dd;
+    box-shadow:0 1px 5px rgba(0,0,0,.16);
+    padding:34px 62px 54px;
+  }
+
+  /* ---- running head (fancyhdr) ---- */
+  .runhead{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:.8em;                 /* \footnotesize */
+    font-variant-caps:small-caps;
+    border-bottom:.35pt solid var(--rule);
+    padding-bottom:3px;
+    margin-bottom:1.6em;
+  }
+  .runhead .author{font-variant-caps:normal;}
+
+  /* ---- title block ---- */
+  .titleblock{text-align:center;margin-bottom:1.5em;}
+  .titleblock p{text-align:center;text-indent:0;}
+  h1.doctitle{
+    font-size:1.728em;              /* \LARGE */
+    font-weight:700;
+    line-height:1.17;
+    margin:0;
+  }
+  .byline{
+    font-size:1.2em;                /* \large */
+    margin:.55em 0 0;
+  }
+  .datestamp{font-size:.9em;margin:.35em 0 0;}   /* \small */
+  .orcid{
+    width:.72em;height:.72em;
+    vertical-align:-.02em;
+    margin-left:.2em;
+  }
+
+  /* ---- headings: titleformat/titlespacing, which are very tight ---- */
+  h2{
+    font-size:1.2em;                /* \large\bfseries\scshape */
+    font-weight:700;
+    font-variant-caps:small-caps;
+    line-height:1.2;
+    margin:.85em 0 .16em;
+  }
+  h2 .secnum{font-variant-caps:normal;margin-right:.6em;}
+  h3{
+    font-size:1em;                  /* \normalsize\bfseries */
+    font-weight:700;
+    margin:.7em 0 .12em;
+  }
+  h3 .secnum{margin-right:.55em;}
+  h2.plain{font-variant-caps:small-caps;}
+
+  /* ---- body text: parindent 1em, parskip 0, justified ---- */
+  p{
+    margin:0;
+    text-indent:1em;
+    text-align:justify;
+    hyphens:auto;
+    -webkit-hyphens:auto;
+  }
+  h2 + p, h3 + p, p.cont{text-indent:0;}
+
+  a{color:inherit;}
+  .citelink{text-decoration:none;}
+  .citelink:hover{color:var(--blue);}
+
+  /* ---- displayed math: abovedisplayskip 3.5pt ---- */
+  .disp{
+    margin:.32em 0;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+  mjx-container[display="true"]{margin:0 !important;}
+
+  /* ---- figure (the tikz pipeline) ---- */
+  .figure-wrap{margin:1em 0 .9em;}
+  .diagram{
+    display:flex;
+    align-items:stretch;
+    justify-content:center;
+    gap:.28em;
+  }
+  /* flex-grow follows the tikz text widths: 27, 27, 31, 29, 27 mm */
+  .dbox{
+    flex:27 1 0;
+    border:.4pt solid var(--ink);
+    border-radius:2px;
+    background:var(--pale);
+    padding:.34em .3em;
+    text-align:center;
+    font-size:.82em;                /* \small */
+    line-height:1.2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:2.7em;
+  }
+  .dbox span{white-space:nowrap;}   /* keep the tikz line breaks exact */
+  .dbox.w31{flex-grow:31;}
+  .dbox.w29{flex-grow:29;}
+  .arrow{
+    flex:0 0 auto;
+    align-self:center;
+    color:var(--blue);
+    font-size:.9em;
+    line-height:1;
+  }
+  .arrow::before{content:"\2192";}
+  .fig-caption,.table-caption{
+    width:94%;
+    margin:.7em auto 0;
+    font-size:.9em;                 /* \small */
+    line-height:1.24;
+    text-align:left;
+    text-indent:0;
+  }
+
+  /* ---- theorem environments (noteplain: bold head, italic body) ---- */
+  .thm{margin:.42em 0;}
+  .thm p{text-indent:0;}
+  .thm-head{font-weight:700;}
+  .thm-body{font-style:italic;}
+  .thm .disp{font-style:normal;}
+
+  .proof{margin:.42em 0;}
+  .proof p{text-indent:0;}
+  .proof-label{font-weight:700;}
+  .qed{float:right;}
+
+  /* ---- lists: nosep, leftmargin 1.35em ---- */
+  ol.steps{
+    margin:.25em 0 .25em;
+    padding-left:1.35em;
+  }
+  ol.steps li{margin:0 0 .17em;text-align:justify;}
+
+  /* ---- tables: booktabs, centered, \small ---- */
+  .table-wrap{margin:1em 0 .9em;}
+  .tbl-scroll{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  table{
+    border-collapse:collapse;
+    margin:0 auto;
+    font-size:.9em;
+    line-height:1.3;
+  }
+  thead th{
+    border-top:1.1pt solid var(--rule);
+    border-bottom:.5pt solid var(--rule);
+    padding:.2em .8em;
+    text-align:center;
+    font-weight:400;
+  }
+  thead th:first-child{text-align:left;padding-left:.2em;}
+  tbody td{
+    padding:.13em .8em;
+    text-align:center;
+    white-space:nowrap;
+  }
+  tbody td:first-child{text-align:left;white-space:normal;padding-left:.2em;}
+  tbody tr.panel td{
+    font-style:italic;
+    text-align:left;
+    padding-top:.3em;
+  }
+  tbody tr.midrule-after td{border-bottom:.5pt solid var(--rule);}
+  tbody tr.last-row td{border-bottom:1.1pt solid var(--rule);}
+
+  /* ---- bibliography ---- */
+  .refs{margin-top:.3em;font-size:.9em;}
+  .ref{
+    display:flex;
+    gap:.5em;
+    line-height:1.24;
+    margin-bottom:.1em;
+    scroll-margin-top:1em;
+  }
+  .ref .refnum{flex:0 0 1.6em;text-align:right;}
+  .ref:target{background:var(--pale);}
+  .ref em{font-style:italic;}
+
+  .colophon{
+    margin-top:2.2em;
+    padding-top:.6em;
+    border-top:.35pt solid #b9bcc1;
+    font-size:.8em;
+    text-align:center;
+    color:#4a4f55;
+  }
+  .colophon a{color:#4a4f55;}
+  .colophon a:hover{color:var(--blue);}
+
+  /* ---- phone: full-bleed sheet, stacked diagram ---- */
+  @media (max-width:760px){
+    body{background:#fff;}
+    .sheet{
+      margin:0;
+      border:0;
+      box-shadow:none;
+      padding:18px 18px 40px;
+      max-width:100%;
+    }
+    .diagram{flex-direction:column;align-items:center;gap:.2em;}
+    .dbox{width:min(300px,86vw);flex:0 0 auto;min-height:0;padding:.4em .5em;}
+    .arrow::before{content:"\2193";}
+    p{text-align:left;}
+    .fig-caption,.table-caption{width:100%;}
+    h1.doctitle{font-size:1.5em;}
+  }
+  @media (max-width:420px){
+    body{font-size:16px;}
+    .sheet{padding:14px 14px 34px;}
+  }
+
+  .noscript-warn{
+    background:var(--pale);
+    padding:.6em .8em;
+    font-size:.9em;
+    text-indent:0;
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <div class="runhead">
+    <span class="title">Propensity Neighborhoods</span>
+    <span class="author">J.&nbsp;R.&nbsp;Landers</span>
+  </div>
+
+  <noscript><p class="noscript-warn">Mathematics on this page is typeset with MathJax and needs JavaScript enabled. The <a href="propensity_neighborhood_accessible.pdf">PDF version</a> is otherwise identical.</p></noscript>
+
+  <div class="titleblock">
+    <h1 class="doctitle">Behavioral Embeddings and Propensity Neighborhoods for Program Recommendation</h1>
+    <p class="byline">J.&nbsp;R.&nbsp;Landers<a href="https://orcid.org/0000-0003-1872-6179" title="ORCID 0000-0003-1872-6179" target="_blank" rel="noopener"><svg class="orcid" viewBox="0 0 32 32" role="img" aria-label="ORCID iD"><circle cx="16" cy="16" r="16" fill="#000"/><text x="16" y="23.5" text-anchor="middle" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="bold">iD</text></svg></a></p>
+    <p class="datestamp">September 2026</p>
+  </div>
+
+  <h2 id="sec1"><span class="secnum">1</span>The problem and the idea</h2>
+
+  <p>A utility often has several programs that a customer could join. A propensity model can score each eligible program and recommend the one with the largest predicted enrollment probability. This is a sensible baseline, but it can miss local patterns: the model may repeatedly overpredict or underpredict a program for customers with similar behavior.</p>
+
+  <p>We study a simple response. First, compress each customer&rsquo;s behavioral history into an embedding. Second, estimate a propensity for every program. Third, find historical customers who look like the target customer and use their out-of-fold prediction errors to make a local correction. The central difficulty is that a more detailed match leaves fewer peers. A useful recommender must balance similarity against support.</p>
+
+  <p>The evidence gives a clear division of labor. Behavioral embeddings provide the main predictive gain. Neighborhood correction provides a small improvement in propensity calibration but no confirmed improvement in the winning recommendation. The theory remains useful because it states when local evidence is precise enough to trust and when the system should keep the base result or abstain.</p>
+
+  <div class="figure-wrap">
+    <div class="diagram" role="img" aria-label="Pipeline: attributes and behavioral history, to embedding z of x, to program propensities p-tilde of x, to nested peers balancing match and support, to calibrate, rank, or abstain.">
+      <div class="dbox"><span>attributes and<br>behavioral history</span></div>
+      <div class="arrow"></div>
+      <div class="dbox"><span>embedding<br>\(z(x)\)</span></div>
+      <div class="arrow"></div>
+      <div class="dbox w31"><span>program propensities<br>\(\widetilde p(x)\)</span></div>
+      <div class="arrow"></div>
+      <div class="dbox w29"><span>nested peers<br>match \(+\) support</span></div>
+      <div class="arrow"></div>
+      <div class="dbox"><span>calibrate, rank,<br>or abstain</span></div>
+    </div>
+    <p class="fig-caption"><b>Figure 1.</b> The embedding supplies the predictive representation. The neighborhood supplies local evidence and a measure of its reliability.</p>
+  </div>
+
+  <h2 id="sec2"><span class="secnum">2</span>Propensities and behavioral embeddings</h2>
+
+  <p>Let \(x\) denote a customer and let \(\cA=\{a_1,\ldots,a_K\}\) be a catalog of \(K\) programs. Eligibility leaves the feasible set \(\cA(x)\subseteq\cA\). For program \(a\), define the true enrollment propensity</p>
+  <div class="disp">\[ p_a(x)=\Pr(x \text{ enrolls in } a)\in[0,1]. \]</div>
+  <p class="cont">The vector \(p(x)=(p_{a_1}(x),\ldots,p_{a_K}(x))\) is the customer&rsquo;s true propensity row. For customers \(x_1,\ldots,x_N\), stacking these rows gives the true propensity matrix \(P\in[0,1]^{N\times K}\). A fitted model produces rows \(\widetilde p(x_i)\) and the fitted matrix \(\widetilde P\). The direct recommender chooses</p>
+  <div class="disp">\[ \widetilde a(x)\in\argmax_{a\in\cA(x)}\widetilde p_a(x). \tag{1}\]</div>
+
+  <p>Behavior provides useful customer coordinates. Let \(H\in\mathbb R^{N\times J}\) record the pre-decision activity of \(N\) customers over \(J\) items or events. A rank-\(D\) factorization gives</p>
+  <div class="disp">\[ H\approx U_D\Sigma_DV_D^\top, \qquad z(x_i)=(U_D\Sigma_D)_{i\cdot}\in\mathbb R^D. \]</div>
+  <p class="cont">Here \((\cdot)_{i\cdot}\) selects matrix row \(i\), \({}^\top\) denotes transpose, and \(z(x_i)\) is customer \(i\)&rsquo;s behavioral embedding. If \(s(x)\) is a vector of ordinary customer attributes, a program model has the form</p>
+  <div class="disp">\[ \widetilde p_a(x)=f_a\bigl(s(x),z(x)\bigr). \tag{2}\]</div>
+  <p class="cont">This transparent factorization follows the collaborative-filtering tradition <a class="citelink" href="#ref-1">[1]</a>; richer sequential representations could be used instead <a class="citelink" href="#ref-2">[2</a>, <a class="citelink" href="#ref-3">3]</a>. What matters is whether nearby coordinates identify customers with similar future propensities or similar remaining model errors.</p>
+
+  <h2 id="sec3"><span class="secnum">3</span>Nested neighborhoods</h2>
+
+  <p>Let \(x_1,\ldots,x_n\) be historical reference customers. Divide the available customer representation into \(M\) ordered blocks. After the first \(m\) blocks, let \(d_m(x,x_i)\) be the cumulative distance from target \(x\) to reference customer \(x_i\). We require</p>
+  <div class="disp">\[ d_{m+1}(x,x_i)\ge d_m(x,x_i). \]</div>
+  <p class="cont">For a fixed radius \(r\ge0\), define the level-\(m\) neighborhood and its size by</p>
+  <div class="disp">\[ \cN_m(x;r)=\{i:d_m(x,x_i)\le r\}, \qquad n_m=|\cN_m(x;r)|. \tag{3}\]</div>
+  <p class="cont">Only nonempty neighborhoods are used.</p>
+
+  <div class="thm">
+    <p><span class="thm-head">Proposition 1</span> <span class="thm-body">(More detail leaves fewer peers). For \(m=1,\ldots,M-1\),</span></p>
+    <div class="disp">\[ \cN_{m+1}(x;r)\subseteq\cN_m(x;r), \qquad n_{m+1}\le n_m. \]</div>
+  </div>
+  <div class="proof">
+    <p><span class="proof-label">Proof.</span> If \(d_{m+1}(x,x_i)\le r\), then \(d_m(x,x_i)\le d_{m+1}(x,x_i)\le r\). Every later-level peer was therefore already an earlier-level peer.<span class="qed">&#9633;</span></p>
+  </div>
+
+  <p>To measure the quality of the remaining match, let \(g(x)=(g_a(x):a\in\cA)\) be any program-indexed target. Define</p>
+  <div class="disp">\[ \varepsilon_m^g(x)= \max_{i\in\cN_m(x;r)}\|g(x_i)-g(x)\|_\infty, \qquad \|v\|_\infty=\max_a|v_a|. \tag{4}\]</div>
+  <p class="cont">For direct peer averaging, take \(g=p\). For residual correction, take</p>
+  <div class="disp">\[ g=\rho, \qquad \rho(x)=p(x)-\widetilde p(x). \]</div>
+  <p class="cont">Thus \(\rho(x)\) is the error left by the base propensity model.</p>
+
+  <div class="thm">
+    <p><span class="thm-head">Proposition 2</span> <span class="thm-body">(Refinement improves worst-case local similarity). If \(\cN_{m+1}(x;r)\) is nonempty, then</span></p>
+    <div class="disp">\[ \varepsilon_{m+1}^g(x)\le\varepsilon_m^g(x). \]</div>
+  </div>
+  <div class="proof">
+    <p><span class="proof-label">Proof.</span> The later neighborhood is a subset of the earlier one by Proposition&nbsp;1. The maximum of the same nonnegative quantity cannot increase when points are removed.<span class="qed">&#9633;</span></p>
+  </div>
+
+  <p>These propositions describe the basic tension. Adding detail cannot worsen the worst match among the peers who remain, but it cannot add support. Propensity rows themselves provide a convenient geometry, for example</p>
+  <div class="disp">\[ d_p(x,x_i)=\|\widetilde p(x)-\widetilde p(x_i)\|_\infty. \]</div>
+  <p class="cont">A leave-one-program-out distance can omit coordinate \(a\) when calibrating program \(a\), although the experiments find that the omitted coordinate often contains useful retrieval information.</p>
+
+  <h2 id="sec4"><span class="secnum">4</span>The refinement frontier</h2>
+
+  <p>For peer \(i\) and eligible program \(a\), let \(Y_{ia}\in[0,B]\) be a bounded calibration outcome with \(\E[Y_{ia}\mid x_i]=p_a(x_i)\). Binary enrollment has \(B=1\). Reference predictions must be out of fold or produced by a separately fitted model. At level \(m\), correct the target score with the peers&rsquo; mean residual:</p>
+  <div class="disp">\[ \widehat p_{a,m}(x)=\widetilde p_a(x) +\frac{1}{n_m}\sum_{i\in\cN_m(x;r)} \bigl(Y_{ia}-\widetilde p_a(x_i)\bigr), \qquad \widehat a_m\in\argmax_{a\in\cA(x)}\widehat p_{a,m}(x). \tag{5}\]</div>
+  <p class="cont">Clipping \(\widehat p_{a,m}(x)\) to \([0,1]\) is optional. Let \(a^*\) be a true best eligible program and let \(K_x=|\cA(x)|\).</p>
+
+  <div class="thm">
+    <p><span class="thm-head">Theorem 3</span> <span class="thm-body">(Residual refinement frontier). Suppose that, conditional on the customer profiles, \(\{Y_{ia}:i=1,\ldots,n\}\) are independent for each \(a\), and the neighborhoods are fixed from information independent of these outcomes. For a prespecified nonempty level \(m\) and \(\alpha\in(0,1)\), with probability at least \(1-\alpha\),</span></p>
+    <div class="disp">\[ p_{a^*}(x)-p_{\widehat a_m}(x) \le 2b_m(x), \qquad b_m(x)=\varepsilon_m^\rho(x) +B\sqrt{\frac{\log(2K_x/\alpha)}{2n_m}}. \]</div>
+    <p class="thm-body">If the same calibration outcomes select one of \(M\) levels, replace \(K_x\) by \(K_xM\).</p>
+  </div>
+  <div class="proof">
+    <p><span class="proof-label">Proof.</span> Let \(\bar\rho_{a,m}=n_m^{-1}\sum_{i\in\cN_m}\rho_a(x_i)\). The conditional mean of (5) is \(\widetilde p_a(x)+\bar\rho_{a,m}\), and</p>
+    <div class="disp">\[ |\bar\rho_{a,m}-\rho_a(x)|\le\varepsilon_m^\rho(x). \]</div>
+    <p>Hoeffding&rsquo;s inequality and a union bound over the \(K_x\) programs show that, simultaneously in \(a\),</p>
+    <div class="disp">\[ |\widehat p_{a,m}(x)-p_a(x)|\le b_m(x). \]</div>
+    <p>Because \(\widehat a_m\) maximizes the fitted values,</p>
+    <div class="disp">\[ p_{a^*}(x)-p_{\widehat a_m}(x) \le[p_{a^*}-\widehat p_{a^*,m}] +[\widehat p_{\widehat a_m,m}-p_{\widehat a_m}] \le2b_m(x). \]</div>
+    <p>A second union bound over the \(M\) levels proves the adaptive statement.<span class="qed">&#9633;</span></p>
+  </div>
+
+  <p>The bound has an intuitive form. The mismatch \(\varepsilon_m^\rho\) decreases with refinement, while the sampling term grows as \(n_m\) falls. Let \(\widehat\varepsilon_m^\rho(x)\) be a validation estimate or upper-confidence estimate of the unknown mismatch. An estimated frontier chooses</p>
+  <div class="disp">\[ \widehat m(x)\in\argmin_m \left\{ \widehat\varepsilon_m^\rho(x) +B\sqrt{\frac{\log(2K_xM/\alpha)}{2n_m}} \right\}. \tag{6}\]</div>
+  <p class="cont">The best level is not the most detailed one. It is the level at which a closer match is still worth the support it costs.</p>
+
+  <h3 id="sec4-1"><span class="secnum">4.1</span>An operational version</h3>
+
+  <p>The true target residual is unknown at recommendation time. Let \(\widehat\rho(x)\) be a residual model trained separately from the target and reference outcomes. Write</p>
+  <div class="disp">\[ R_i=Y_i-\widetilde p(x_i), \qquad c_m(x)=\lambda_m\frac{1}{n_m}\sum_{i\in\cN_m(x;r)}R_i, \qquad \lambda_m\in[0,1]. \]</div>
+  <p class="cont">Include level \(m=0\) with \(c_0(x)=0\). Define two observable discrepancies:</p>
+  <div class="disp">\[ \begin{aligned} D_m^{\rm mean}(x)&=\|\widehat\rho(x)-c_m(x)\|_\infty,\\ D_m^{\rm max}(x)&=\lambda_m\max_{i\in\cN_m} \|\widehat\rho(x)-R_i\|_\infty +(1-\lambda_m)\|\widehat\rho(x)\|_\infty. \end{aligned} \]</div>
+  <p class="cont">Convexity gives \(D_m^{\rm mean}\le D_m^{\rm max}\).</p>
+
+  <div class="thm">
+    <p><span class="thm-head">Corollary 4</span> <span class="thm-body">(Operational peer-mean frontier). Suppose an independently constructed simultaneous band satisfies</span></p>
+    <div class="disp">\[ \Pr\{\|\rho(x)-\widehat\rho(x)\|_\infty\le\eta(x)\}\ge1-\delta. \]</div>
+    <p class="thm-body">Choose \(\widehat m(x)\) by minimizing either observable discrepancy, including level zero, without using \(p(x)\). Then, with probability at least \(1-\delta\),</p>
+    <div class="disp">\[ \|p(x)-[\widetilde p(x)+c_{\widehat m}(x)]\|_\infty \le\eta(x)+D_{\widehat m}^{\rm mean}(x) \le\eta(x)+D_{\widehat m}^{\rm max}(x), \]</div>
+    <p class="thm-body">and the selected program&rsquo;s propensity regret is at most twice the corresponding right-hand side.</p>
+  </div>
+  <div class="proof">
+    <p><span class="proof-label">Proof.</span> Use the decomposition</p>
+    <div class="disp">\[ \rho(x)-c_{\widehat m}(x) =[\rho(x)-\widehat\rho(x)]+[\widehat\rho(x)-c_{\widehat m}(x)] \]</div>
+    <p>and apply the triangle inequality. Convexity gives the second inequality. The two-error argument in Theorem&nbsp;3 gives the regret result.<span class="qed">&#9633;</span></p>
+  </div>
+
+  <p>This is a latent-propensity guarantee only when the band covers \(\rho(x)\). Ordinary split conformal prediction instead gives a marginal statement about a future realized outcome. If the complete neighborhood algorithm is frozen before an independent calibration split, let \(\widehat p^{\rm op}(x)\) denote its final score vector and define</p>
+  <div class="disp">\[ S_i=\|Y_i-\widehat p^{\rm op}(x_i)\|_\infty, \]</div>
+  <p class="cont">then the corrected split-conformal quantile \(q_{1-\alpha}\) satisfies</p>
+  <div class="disp">\[ \Pr\{\|Y-\widehat p^{\rm op}(X)\|_\infty\le q_{1-\alpha}\}\ge1-\alpha \tag{7}\]</div>
+  <p class="cont">under exchangeability <a class="citelink" href="#ref-4">[4]</a>. Realized-outcome regret is at most \(2q_{1-\alpha}\) on this event. This is marginal coverage, not pointwise coverage of the conditional mean.</p>
+
+  <div class="thm">
+    <p><span class="thm-head">Remark 5</span> <span class="thm-body">(Known propensity coordinates).</span> If domain knowledge fixes \(p_a(x)\) at zero or one, then its residual is known exactly and its uncertainty radius can be set to zero. Only the unknown coordinates need a residual band.</p>
+  </div>
+
+  <div class="thm">
+    <p><span class="thm-head">Corollary 6</span> <span class="thm-body">(A confident recommendation). Assume \(K_x\ge2\). Let the corrected winner have empirical lead</span></p>
+    <div class="disp">\[ \Delta_m(x)=\widehat p_{\widehat a_m,m}(x) -\max_{a\in\cA(x),\,a\ne\widehat a_m}\widehat p_{a,m}(x). \]</div>
+    <p class="thm-body">On the event in Theorem&nbsp;3, if \(\Delta_m(x)>2b_m(x)\), then \(\widehat a_m\) is the unique true best program.</p>
+  </div>
+  <div class="proof">
+    <p><span class="proof-label">Proof.</span> Every true propensity is within \(b_m\) of its estimate. A fitted lead larger than \(2b_m\) stays positive even after both scores move by their largest permitted errors.<span class="qed">&#9633;</span></p>
+  </div>
+
+  <p>Shrinkage replaces the raw correction by \(\lambda c_m\). Its uniform error is at most</p>
+  <div class="disp">\[ (1-\lambda)\|\rho(x)\|_\infty +\lambda\varepsilon_m^\rho(x) +\lambda B\sqrt{\frac{\log(2K_x/\alpha)}{2n_m}}. \]</div>
+  <p class="cont">Validation can choose \(\lambda\). In practice, rerank only when local evidence clears the relevant margin bound; otherwise retain the base choice or flag low confidence.</p>
+
+  <h2 id="sec5"><span class="secnum">5</span>How the system runs</h2>
+
+  <p>The mathematics maps to a short operating loop:</p>
+  <ol class="steps">
+    <li><b>Filter eligibility.</b> Form \(\cA(x)\) before scoring.</li>
+    <li><b>Represent the customer.</b> Learn \(z(x)\) from pre-decision history and combine it with \(s(x)\).</li>
+    <li><b>Score the catalog.</b> Fit \(\widetilde p_a(x)=f_a(s(x),z(x))\) and create out-of-fold reference rows.</li>
+    <li><b>Retrieve nested peers.</b> Add declared feature blocks so \(\cN_1\supseteq\cdots\supseteq\cN_M\).</li>
+    <li><b>Balance match and support.</b> Record mismatch, \(n_m\), and the frontier objective in (6); level zero keeps the base model.</li>
+    <li><b>Decide.</b> Apply a supported residual correction, compare the top margin with its bound, and recommend, retain the base ranking, or abstain.</li>
+  </ol>
+  <p class="cont">This retrieve-and-rank structure is common in large recommender systems <a class="citelink" href="#ref-5">[5]</a>. Here the neighborhood and certificate decide whether local evidence is strong enough to modify the score.</p>
+
+  <h2 id="sec6"><span class="secnum">6</span>Evidence from KuaiRec</h2>
+
+  <p>KuaiRec contains nearly complete viewing records for 1,411 users and 3,327 videos <a class="citelink" href="#ref-6">[6]</a>. We use the twelve largest video categories as program analogues. A user&rsquo;s category propensity is the fraction of videos watched to completion. For each user, the first 60% of interactions form the observable history and the last 40% form future targets. In each repeated split, 60% of users estimate the models and out-of-fold residuals, 25% tune neighborhood choices, and 15% are untouched test users. A 32-coordinate SVD embedding is fit from estimation histories only.</p>
+
+  <div class="table-wrap">
+    <p class="table-caption"><b>Table 1.</b> Mean chronological test performance over ten splits. Lower RMSE and regret are better; higher hit rate is better. Panel B uses ten fresh splits after the propensity-neighborhood rule was frozen.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead>
+        <tr><th>Method</th><th>RMSE</th><th>Top-1 regret</th><th>Hit rate</th></tr>
+      </thead>
+      <tbody>
+        <tr class="panel"><td colspan="4">Panel A: behavioral representation</td></tr>
+        <tr><td>Static customer features</td><td>0.126761</td><td>0.041357</td><td>34.46%</td></tr>
+        <tr><td>Static \(+\) behavioral embedding</td><td>0.086310</td><td>0.038726</td><td>37.04%</td></tr>
+        <tr><td>Embedding-space shared neighbors</td><td>0.085960</td><td><b>0.038530</b></td><td><b>37.09%</b></td></tr>
+        <tr class="midrule-after"><td>Embedding-space program-specific neighbors</td><td><b>0.085564</b></td><td>0.039276</td><td>36.48%</td></tr>
+        <tr class="panel"><td colspan="4">Panel B: propensity-space confirmation</td></tr>
+        <tr><td>Static \(+\) behavioral embedding</td><td>0.083850</td><td><b>0.036119</b></td><td><b>39.30%</b></td></tr>
+        <tr><td>Full-row propensity neighbors</td><td><b>0.083498</b></td><td>0.036931</td><td>38.83%</td></tr>
+        <tr class="last-row"><td>Leave-one-program-out neighbors</td><td>0.083833</td><td>0.037950</td><td>37.51%</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <p>The embedding is the main result. Relative to static features, it lowers RMSE by 31.9%, lowers regret by 6.4%, and raises hit rate by 2.58 percentage points. RMSE improves in all ten splits, regret in eight, and hit rate in nine. The learned representation therefore captures useful future behavior before any local correction is applied.</p>
+
+  <p>Neighborhoods have a smaller role. Full-row propensity neighborhoods improve RMSE in nine of ten fresh splits, but their mean regret is 2.2% worse than direct embedding-based ranking. Leave-one-program-out matching is weaker. Better calibration does not necessarily identify a better winner.</p>
+
+  <p>A separate leakage-free operational experiment uses disjoint groups to fit the base model, fit \(\widehat\rho\), supply reference residuals, calibrate conformal scores, and evaluate the frozen rule. It aggregates 4,280 held-out-user evaluations.</p>
+
+  <div class="table-wrap">
+    <p class="table-caption"><b>Table 2.</b> Operational fixed-radius diagnostic over twenty disjoint splits. Neighborhood use is the fraction of test users receiving a peer correction.</p>
+    <div class="tbl-scroll">
+    <table>
+      <thead>
+        <tr><th>Method</th><th>RMSE</th><th>Regret</th><th>Hit rate</th><th>Use</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Base model</td><td>0.110439</td><td>0.019361</td><td>49.18%</td><td>0.00%</td></tr>
+        <tr><td>Theorem-faithful max frontier</td><td>0.110438</td><td>0.019361</td><td>49.18%</td><td>0.09%</td></tr>
+        <tr><td>Operational peer-mean frontier</td><td><b>0.110129</b></td><td><b>0.019257</b></td><td><b>49.35%</b></td><td>63.36%</td></tr>
+        <tr class="last-row"><td>Legacy score-space proxy</td><td>0.110318</td><td>0.019429</td><td>49.00%</td><td>100.00%</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <p>The peer-mean frontier lowers RMSE by 0.000310; its descriptive paired 95% interval is \([-0.000560,-0.000060]\). Regret and hit-rate intervals include zero. End-to-end split conformal calibration attains 90.9% coverage at nominal 90%, but its mean regret bound, 0.5053, is slightly wider than the base benchmark, 0.5018. No top-two margin is wide enough to certify an individual winner. The experiments therefore support a modest calibration benefit, not an additional ranking gain.</p>
+
+  <p>The earlier fixed-radius pilot also displays the geometric mechanism: later blocks rapidly remove peers, and performance worsens when refinement outruns support. The support-aware rule avoids the deepest level. This is what the frontier is designed to control.</p>
+
+  <h2 id="sec7"><span class="secnum">7</span>Interpretation</h2>
+
+  <p>The practical recommendation is straightforward: use behavioral embeddings in the propensity model and rank its eligible outputs directly. Keep the neighborhood layer when local calibration, diagnostics, or confidence information is valuable. The theorem tells the system when a correction has enough support; it does not assume that useful local residual structure exists in every dataset.</p>
+
+  <p>The target also matters. Enrollment propensity is not the same as incremental enrollment, energy savings, or economic value. If a causal effect is identified under an appropriate assignment and policy-evaluation design, that effect can replace \(p_a(x)\) in the workflow <a class="citelink" href="#ref-7">[7]</a>. Recent energy studies show the value of targeting heterogeneous conservation and retrofit effects <a class="citelink" href="#ref-8">[8</a>, <a class="citelink" href="#ref-9">9]</a>. The present analysis is narrower: it studies enrollment propensity and the reliability of local correction.</p>
+
+  <p>The resulting story has three parts. Behavioral history supplies a useful geometry. Nested neighborhoods make local evidence more specific while spending peer support. The refinement frontier prices that trade and supports a calibrated recommendation, a retained base ranking, or an honest decision to abstain.</p>
+
+  <h2 class="plain" id="references">References</h2>
+  <div class="refs">
+    <div class="ref" id="ref-1"><span class="refnum">[1]</span><span>Y. Koren, R. Bell, and C. Volinsky, &ldquo;Matrix factorization techniques for recommender systems,&rdquo; <em>Computer</em>, 42(8):30&ndash;37, 2009.</span></div>
+    <div class="ref" id="ref-2"><span class="refnum">[2]</span><span>W.-C. Kang and J. McAuley, &ldquo;Self-attentive sequential recommendation,&rdquo; in <em>Proc. ICDM</em>, pp. 197&ndash;206, 2018.</span></div>
+    <div class="ref" id="ref-3"><span class="refnum">[3]</span><span>F. Sun et al., &ldquo;BERT4Rec: Sequential recommendation with bidirectional encoder representations from Transformer,&rdquo; in <em>Proc. CIKM</em>, pp. 1441&ndash;1450, 2019.</span></div>
+    <div class="ref" id="ref-4"><span class="refnum">[4]</span><span>G. Shafer and V. Vovk, &ldquo;A tutorial on conformal prediction,&rdquo; <em>JMLR</em>, 9:371&ndash;421, 2008.</span></div>
+    <div class="ref" id="ref-5"><span class="refnum">[5]</span><span>P. Covington, J. Adams, and E. Sargin, &ldquo;Deep neural networks for YouTube recommendations,&rdquo; in <em>Proc. RecSys</em>, pp. 191&ndash;198, 2016.</span></div>
+    <div class="ref" id="ref-6"><span class="refnum">[6]</span><span>C. Gao et al., &ldquo;KuaiRec: A fully-observed dataset and insights for evaluating recommender systems,&rdquo; in <em>Proc. CIKM</em>, pp. 540&ndash;550, 2022.</span></div>
+    <div class="ref" id="ref-7"><span class="refnum">[7]</span><span>M. Dud&iacute;k, J. Langford, and L. Li, &ldquo;Doubly robust policy evaluation and learning,&rdquo; in <em>Proc. ICML</em>, pp. 1097&ndash;1104, 2011.</span></div>
+    <div class="ref" id="ref-8"><span class="refnum">[8]</span><span>C. R. Knittel and S. Stolper, &ldquo;Using machine learning to target treatment: The case of household energy use,&rdquo; <em>Economic Journal</em>, 135(672):2377&ndash;2401, 2025.</span></div>
+    <div class="ref" id="ref-9"><span class="refnum">[9]</span><span>P. Christensen et al., &ldquo;Energy efficiency can deliver for climate policy: Evidence from machine learning-based targeting,&rdquo; <em>Journal of Public Economics</em>, 234:105098, 2024.</span></div>
+  </div>
+
+  <p class="colophon">HTML edition &middot; <a href="propensity_neighborhood_accessible.pdf">PDF version</a></p>
+
+</div>
+
+</body>
+</html>
