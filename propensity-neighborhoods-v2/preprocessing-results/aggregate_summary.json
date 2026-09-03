@@ -1,0 +1,242 @@
+{
+  "splits": 10,
+  "comparisons": {
+    "rmse:combined_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": 9.85979620798938e-07,
+      "paired_95pct_interval": [
+        -0.0002261161058654705,
+        0.00022808806510706835
+      ],
+      "wins": 7,
+      "splits": 10
+    },
+    "rmse:combined_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": -0.00023690308252561075,
+      "paired_95pct_interval": [
+        -0.00038754664687190327,
+        -8.625951817931824e-05
+      ],
+      "wins": 10,
+      "splits": 10
+    },
+    "rmse:embedding_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": 0.00012486257790797345,
+      "paired_95pct_interval": [
+        -0.00014469144700200316,
+        0.00039441660281795004
+      ],
+      "wins": 5,
+      "splits": 10
+    },
+    "rmse:embedding_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": -0.00011302648423843625,
+      "paired_95pct_interval": [
+        -0.0002873712100024404,
+        6.13182415255679e-05
+      ],
+      "wins": 9,
+      "splits": 10
+    },
+    "rmse:propensity_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": 0.00017476320602990704,
+      "paired_95pct_interval": [
+        -3.233703966225865e-05,
+        0.0003818634517220727
+      ],
+      "wins": 5,
+      "splits": 10
+    },
+    "rmse:propensity_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": -6.312585611650267e-05,
+      "paired_95pct_interval": [
+        -0.00015336438951199781,
+        2.7112677278992472e-05
+      ],
+      "wins": 9,
+      "splits": 10
+    },
+    "top1_regret:combined_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": 0.00034970678389072417,
+      "paired_95pct_interval": [
+        -0.0004878585342915469,
+        0.0011872721020729953
+      ],
+      "wins": 1,
+      "splits": 10
+    },
+    "top1_regret:combined_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": 6.387755274772644e-06,
+      "paired_95pct_interval": [
+        -0.0007759511330006611,
+        0.0007887266435502065
+      ],
+      "wins": 3,
+      "splits": 10
+    },
+    "top1_regret:embedding_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": -0.00011276435106992722,
+      "paired_95pct_interval": [
+        -0.0007892815512144522,
+        0.0005637528490745977
+      ],
+      "wins": 4,
+      "splits": 10
+    },
+    "top1_regret:embedding_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": -0.00045608337968587874,
+      "paired_95pct_interval": [
+        -0.0008860831608732707,
+        -2.608359849848676e-05
+      ],
+      "wins": 5,
+      "splits": 10
+    },
+    "top1_regret:propensity_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": 0.00014303158968687057,
+      "paired_95pct_interval": [
+        -0.0005319153509396894,
+        0.0008179785303134306
+      ],
+      "wins": 3,
+      "splits": 10
+    },
+    "top1_regret:propensity_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": -0.00020028743892908096,
+      "paired_95pct_interval": [
+        -0.0006329798443149946,
+        0.00023240496645683271
+      ],
+      "wins": 4,
+      "splits": 10
+    },
+    "top1_hit_rate:combined_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": -0.005164319248826305,
+      "paired_95pct_interval": [
+        -0.012323833699431644,
+        0.0019951952017790335
+      ],
+      "wins": 1,
+      "splits": 10
+    },
+    "top1_hit_rate:combined_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": -0.0032863849765258357,
+      "paired_95pct_interval": [
+        -0.01224933408991462,
+        0.005676564136862948
+      ],
+      "wins": 3,
+      "splits": 10
+    },
+    "top1_hit_rate:embedding_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": 0.0014084507042253446,
+      "paired_95pct_interval": [
+        -0.002485716555773888,
+        0.005302617964224578
+      ],
+      "wins": 3,
+      "splits": 10
+    },
+    "top1_hit_rate:embedding_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": 0.0032863849765258136,
+      "paired_95pct_interval": [
+        -0.0006077822834734134,
+        0.007180552236525041
+      ],
+      "wins": 4,
+      "splits": 10
+    },
+    "top1_hit_rate:propensity_neighborhood_preprocessor_vs_preliminary_base": {
+      "mean_change": -0.004225352112676062,
+      "paired_95pct_interval": [
+        -0.012520193543676592,
+        0.004069489318324469
+      ],
+      "wins": 2,
+      "splits": 10
+    },
+    "top1_hit_rate:propensity_neighborhood_preprocessor_vs_stacked_base_preprocessor": {
+      "mean_change": -0.002347417840375593,
+      "paired_95pct_interval": [
+        -0.009293697765039948,
+        0.004598862084288761
+      ],
+      "wins": 2,
+      "splits": 10
+    }
+  },
+  "seeds": [
+    20260902,
+    20260903,
+    20260904,
+    20260905,
+    20260906,
+    20260907,
+    20260908,
+    20260909,
+    20260910,
+    20260911
+  ],
+  "runtime_seconds": 147.77312469999015,
+  "selected_alphas": [
+    {
+      "stacked_base_preprocessor": 10000.0,
+      "propensity_neighborhood_preprocessor": 10000.0,
+      "embedding_neighborhood_preprocessor": 10000.0,
+      "combined_neighborhood_preprocessor": 1000000.0
+    },
+    {
+      "stacked_base_preprocessor": 1000000.0,
+      "propensity_neighborhood_preprocessor": 1000000.0,
+      "embedding_neighborhood_preprocessor": 1000000.0,
+      "combined_neighborhood_preprocessor": 10000.0
+    },
+    {
+      "stacked_base_preprocessor": 10000.0,
+      "propensity_neighborhood_preprocessor": 10000.0,
+      "embedding_neighborhood_preprocessor": 1000000.0,
+      "combined_neighborhood_preprocessor": 1000000.0
+    },
+    {
+      "stacked_base_preprocessor": 1000000.0,
+      "propensity_neighborhood_preprocessor": 1000000.0,
+      "embedding_neighborhood_preprocessor": 1000000.0,
+      "combined_neighborhood_preprocessor": 1000000.0
+    },
+    {
+      "stacked_base_preprocessor": 10000.0,
+      "propensity_neighborhood_preprocessor": 10000.0,
+      "embedding_neighborhood_preprocessor": 10000.0,
+      "combined_neighborhood_preprocessor": 10000.0
+    },
+    {
+      "stacked_base_preprocessor": 10000.0,
+      "propensity_neighborhood_preprocessor": 10000.0,
+      "embedding_neighborhood_preprocessor": 10000.0,
+      "combined_neighborhood_preprocessor": 10000.0
+    },
+    {
+      "stacked_base_preprocessor": 1000000.0,
+      "propensity_neighborhood_preprocessor": 1000000.0,
+      "embedding_neighborhood_preprocessor": 1000000.0,
+      "combined_neighborhood_preprocessor": 10000.0
+    },
+    {
+      "stacked_base_preprocessor": 1000000.0,
+      "propensity_neighborhood_preprocessor": 1000000.0,
+      "embedding_neighborhood_preprocessor": 1000000.0,
+      "combined_neighborhood_preprocessor": 1000000.0
+    },
+    {
+      "stacked_base_preprocessor": 1000000.0,
+      "propensity_neighborhood_preprocessor": 10000.0,
+      "embedding_neighborhood_preprocessor": 1000000.0,
+      "combined_neighborhood_preprocessor": 10000.0
+    },
+    {
+      "stacked_base_preprocessor": 10000.0,
+      "propensity_neighborhood_preprocessor": 10000.0,
+      "embedding_neighborhood_preprocessor": 1000000.0,
+      "combined_neighborhood_preprocessor": 10000.0
+    }
+  ]
+}

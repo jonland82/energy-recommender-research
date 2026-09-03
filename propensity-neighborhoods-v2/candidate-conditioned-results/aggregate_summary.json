@@ -1,0 +1,250 @@
+{
+  "splits": 10,
+  "comparisons": {
+    "base_pairwise_ranker": {
+      "mean_regret_change_vs_base": -0.0015848726034164429,
+      "relative_regret_change_vs_base": -0.04092562781348901,
+      "paired_95pct_interval": [
+        -0.0031659092148122255,
+        -3.835992020660272e-06
+      ],
+      "regret_wins_vs_base": 7,
+      "splits": 10
+    },
+    "base_top_pairwise_ranker": {
+      "mean_regret_change_vs_base": 0.0015118945389986037,
+      "relative_regret_change_vs_base": 0.039041140002623285,
+      "paired_95pct_interval": [
+        1.1504745096143059e-05,
+        0.0030122843329010644
+      ],
+      "regret_wins_vs_base": 3,
+      "splits": 10
+    },
+    "candidate_conditioned_propensity_ranker": {
+      "mean_regret_change_vs_base": -0.00042478106915950776,
+      "relative_regret_change_vs_base": -0.01096897750719084,
+      "paired_95pct_interval": [
+        -0.0022223767271931046,
+        0.001372814588874089
+      ],
+      "regret_wins_vs_base": 6,
+      "splits": 10
+    },
+    "embedding_neighborhood_ranker": {
+      "mean_regret_change_vs_base": -0.0016159884631633758,
+      "relative_regret_change_vs_base": -0.04172912210845922,
+      "paired_95pct_interval": [
+        -0.0034972353635201766,
+        0.0002652584371934251
+      ],
+      "regret_wins_vs_base": 8,
+      "splits": 10
+    },
+    "fixed_propensity_peer_mean": {
+      "mean_regret_change_vs_base": -0.00036039240658283236,
+      "relative_regret_change_vs_base": -0.009306290907434574,
+      "paired_95pct_interval": [
+        -0.001412686040014014,
+        0.0006919012268483494
+      ],
+      "regret_wins_vs_base": 6,
+      "splits": 10
+    },
+    "neighborhood_pairwise_ranker": {
+      "mean_regret_change_vs_base": -0.0011950146406888961,
+      "relative_regret_change_vs_base": -0.030858457841392364,
+      "paired_95pct_interval": [
+        -0.0035934984310082947,
+        0.0012034691496305022
+      ],
+      "regret_wins_vs_base": 7,
+      "splits": 10
+    },
+    "propensity_neighborhood_ranker": {
+      "mean_regret_change_vs_base": -0.0014146041125059129,
+      "relative_regret_change_vs_base": -0.0365288423101322,
+      "paired_95pct_interval": [
+        -0.0033078351879025046,
+        0.0004786269628906791
+      ],
+      "regret_wins_vs_base": 8,
+      "splits": 10
+    },
+    "propensity_top_pairwise_ranker": {
+      "mean_regret_change_vs_base": 0.0017726607620716095,
+      "relative_regret_change_vs_base": 0.045774817756159984,
+      "paired_95pct_interval": [
+        -0.0010350418212018609,
+        0.004580363345345079
+      ],
+      "regret_wins_vs_base": 3,
+      "splits": 10
+    },
+    "restricted_base_pairwise_ranker": {
+      "mean_regret_change_vs_base": -0.001649622991681099,
+      "relative_regret_change_vs_base": -0.04259765513302614,
+      "paired_95pct_interval": [
+        -0.0032323586279563456,
+        -6.688735540585217e-05
+      ],
+      "regret_wins_vs_base": 8,
+      "splits": 10
+    },
+    "restricted_neighborhood_ranker": {
+      "mean_regret_change_vs_base": -0.0017184875905513763,
+      "relative_regret_change_vs_base": -0.04437592231791837,
+      "paired_95pct_interval": [
+        -0.003928955068517142,
+        0.0004919798874143894
+      ],
+      "regret_wins_vs_base": 8,
+      "splits": 10
+    },
+    "restricted_propensity_top_ranker": {
+      "mean_regret_change_vs_base": 0.0004670310765504837,
+      "relative_regret_change_vs_base": 0.012059985121224217,
+      "paired_95pct_interval": [
+        -0.0012374823165941322,
+        0.0021715444696950997
+      ],
+      "regret_wins_vs_base": 5,
+      "splits": 10
+    }
+  },
+  "incremental_comparisons": {
+    "propensity_top_pairwise_ranker_vs_base_top_pairwise_ranker": {
+      "mean_regret_change": 0.00026076622307300565,
+      "paired_95pct_interval": [
+        -0.002226548561749758,
+        0.0027480810078957694
+      ],
+      "regret_wins": 6,
+      "splits": 10
+    },
+    "propensity_neighborhood_ranker_vs_base_pairwise_ranker": {
+      "mean_regret_change": 0.00017026849091053008,
+      "paired_95pct_interval": [
+        -0.0006356068170680507,
+        0.000976143798889111
+      ],
+      "regret_wins": 4,
+      "splits": 10
+    },
+    "embedding_neighborhood_ranker_vs_base_pairwise_ranker": {
+      "mean_regret_change": -3.1115859746932985e-05,
+      "paired_95pct_interval": [
+        -0.00160469994581852,
+        0.0015424682263246543
+      ],
+      "regret_wins": 5,
+      "splits": 10
+    },
+    "neighborhood_pairwise_ranker_vs_base_pairwise_ranker": {
+      "mean_regret_change": 0.0003898579627275467,
+      "paired_95pct_interval": [
+        -0.001660248422619327,
+        0.00243996434807442
+      ],
+      "regret_wins": 5,
+      "splits": 10
+    },
+    "restricted_neighborhood_ranker_vs_restricted_base_pairwise_ranker": {
+      "mean_regret_change": -6.886459887027741e-05,
+      "paired_95pct_interval": [
+        -0.0019307965900886477,
+        0.0017930673923480928
+      ],
+      "regret_wins": 7,
+      "splits": 10
+    },
+    "restricted_neighborhood_ranker_vs_fixed_propensity_peer_mean": {
+      "mean_regret_change": -0.001358095183968544,
+      "paired_95pct_interval": [
+        -0.0035147781953961768,
+        0.0007985878274590886
+      ],
+      "regret_wins": 7,
+      "splits": 10
+    },
+    "restricted_propensity_top_ranker_vs_fixed_propensity_peer_mean": {
+      "mean_regret_change": 0.000827423483133316,
+      "paired_95pct_interval": [
+        -0.0005491521819990504,
+        0.0022039991482656826
+      ],
+      "regret_wins": 4,
+      "splits": 10
+    },
+    "candidate_conditioned_propensity_ranker_vs_fixed_propensity_peer_mean": {
+      "mean_regret_change": -6.438866257667542e-05,
+      "paired_95pct_interval": [
+        -0.0016548579578248923,
+        0.0015260806326715414
+      ],
+      "regret_wins": 5,
+      "splits": 10
+    }
+  },
+  "neighborhood_pairwise_logloss_reduction_vs_base_ranker": {
+    "mean": -0.003470645637253972,
+    "paired_95pct_interval": [
+      -0.007884939191220085,
+      0.0009436479167121412
+    ],
+    "wins": 1
+  },
+  "seeds": [
+    20260902,
+    20260903,
+    20260904,
+    20260905,
+    20260906,
+    20260907,
+    20260908,
+    20260909,
+    20260910,
+    20260911
+  ],
+  "overall_runtime_seconds": 127.3034661999991,
+  "history_interactions": 2217945,
+  "future_interactions": 1479564,
+  "selected_ranker_c": [
+    0.1,
+    10.0,
+    0.1,
+    0.01,
+    0.1,
+    0.1,
+    10.0,
+    0.1,
+    1.0,
+    0.1
+  ],
+  "selected_tau": [
+    0.1,
+    0.005,
+    0.0025,
+    0.01,
+    0.05,
+    0.05,
+    0.05,
+    0.05,
+    0.01,
+    0.02
+  ],
+  "selected_base_tau": [
+    0.05,
+    0.005,
+    0.01,
+    0.0,
+    0.05,
+    0.05,
+    0.02,
+    0.02,
+    0.05,
+    0.0
+  ],
+  "mean_candidate_set_size": 2.2887323943661975,
+  "mean_restricted_override_rate": 0.2605633802816902
+}

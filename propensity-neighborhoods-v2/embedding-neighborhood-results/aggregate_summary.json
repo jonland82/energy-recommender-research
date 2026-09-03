@@ -1,0 +1,198 @@
+{
+  "splits": 10,
+  "comparisons": {
+    "rmse:fixed_augmented_embedding": {
+      "mean_change_vs_base": -0.00012959129146972447,
+      "paired_95pct_interval": [
+        -0.0002998566859504759,
+        4.067410301102694e-05
+      ],
+      "wins": 5
+    },
+    "rmse:fixed_smoothed_embedding": {
+      "mean_change_vs_base": -1.88839428921575e-05,
+      "paired_95pct_interval": [
+        -0.0002446507548442187,
+        0.00020688286905990374
+      ],
+      "wins": 4
+    },
+    "rmse:tuned_augmented_embedding": {
+      "mean_change_vs_base": 0.0002738942149903764,
+      "paired_95pct_interval": [
+        -0.00013064522016889237,
+        0.0006784336501496453
+      ],
+      "wins": 4
+    },
+    "rmse:tuned_smoothed_embedding": {
+      "mean_change_vs_base": 0.002071971595392244,
+      "paired_95pct_interval": [
+        0.00034994151853666835,
+        0.0037940016722478194
+      ],
+      "wins": 3
+    },
+    "top1_regret:fixed_augmented_embedding": {
+      "mean_change_vs_base": 0.0001579616218805313,
+      "paired_95pct_interval": [
+        -0.0004847552871127135,
+        0.0008006785308737761
+      ],
+      "wins": 5
+    },
+    "top1_regret:fixed_smoothed_embedding": {
+      "mean_change_vs_base": 0.00017816126346588136,
+      "paired_95pct_interval": [
+        -0.00027784946635233006,
+        0.0006341719932840928
+      ],
+      "wins": 4
+    },
+    "top1_regret:tuned_augmented_embedding": {
+      "mean_change_vs_base": -3.655031323432922e-05,
+      "paired_95pct_interval": [
+        -0.000860148789179299,
+        0.0007870481627106406
+      ],
+      "wins": 4
+    },
+    "top1_regret:tuned_smoothed_embedding": {
+      "mean_change_vs_base": -0.0007576420903205872,
+      "paired_95pct_interval": [
+        -0.001837185724038445,
+        0.00032190154339727063
+      ],
+      "wins": 8
+    },
+    "top1_hit_rate:fixed_augmented_embedding": {
+      "mean_change_vs_base": 0.002816901408450695,
+      "paired_95pct_interval": [
+        -0.0033555646117606887,
+        0.008989367428662078
+      ],
+      "wins": 5
+    },
+    "top1_hit_rate:fixed_smoothed_embedding": {
+      "mean_change_vs_base": -0.0004694835680751186,
+      "paired_95pct_interval": [
+        -0.005071681238983314,
+        0.004132714102833076
+      ],
+      "wins": 4
+    },
+    "top1_hit_rate:tuned_augmented_embedding": {
+      "mean_change_vs_base": 0.002816901408450695,
+      "paired_95pct_interval": [
+        -0.008400409889527375,
+        0.014034212706428765
+      ],
+      "wins": 3
+    },
+    "top1_hit_rate:tuned_smoothed_embedding": {
+      "mean_change_vs_base": 0.009389671361502344,
+      "paired_95pct_interval": [
+        0.0013168826140900394,
+        0.017462460108914647
+      ],
+      "wins": 8
+    }
+  },
+  "seeds": [
+    20260902,
+    20260903,
+    20260904,
+    20260905,
+    20260906,
+    20260907,
+    20260908,
+    20260909,
+    20260910,
+    20260911
+  ],
+  "runtime_seconds": 31.86156249999476,
+  "selected_smoothed": [
+    {
+      "k": 200,
+      "mix": 0.75
+    },
+    {
+      "k": 200,
+      "mix": 0.25
+    },
+    {
+      "k": 100,
+      "mix": 0.1
+    },
+    {
+      "k": 200,
+      "mix": 0.75
+    },
+    {
+      "k": 10,
+      "mix": 0.5
+    },
+    {
+      "k": 25,
+      "mix": 0.75
+    },
+    {
+      "k": 100,
+      "mix": 0.75
+    },
+    {
+      "k": 25,
+      "mix": 0.5
+    },
+    {
+      "k": 25,
+      "mix": 0.25
+    },
+    {
+      "k": 25,
+      "mix": 0.75
+    }
+  ],
+  "selected_augmented": [
+    {
+      "k": 25,
+      "mix": 0.75
+    },
+    {
+      "k": 25,
+      "mix": 0.1
+    },
+    {
+      "k": 10,
+      "mix": 0.25
+    },
+    {
+      "k": 100,
+      "mix": 0.5
+    },
+    {
+      "k": 50,
+      "mix": 0.25
+    },
+    {
+      "k": 100,
+      "mix": 0.75
+    },
+    {
+      "k": 50,
+      "mix": 0.5
+    },
+    {
+      "k": 200,
+      "mix": 0.75
+    },
+    {
+      "k": 200,
+      "mix": 0.5
+    },
+    {
+      "k": 50,
+      "mix": 0.5
+    }
+  ]
+}

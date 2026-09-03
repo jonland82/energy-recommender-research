@@ -1,0 +1,78 @@
+{
+  "splits": 10,
+  "comparisons": {
+    "tuned_decision_neighborhood": {
+      "mean_regret_change_vs_base": 0.000670802965760231,
+      "paired_95pct_interval": [
+        -0.0006929323470039339,
+        0.002034538278524396
+      ],
+      "regret_wins": 4,
+      "splits": 10
+    },
+    "fixed_decision_neighborhood": {
+      "mean_regret_change_vs_base": 0.0005541030317544937,
+      "paired_95pct_interval": [
+        -0.0005077808220914907,
+        0.0016159868856004782
+      ],
+      "regret_wins": 5,
+      "splits": 10
+    }
+  },
+  "mean_top2_recall": 0.6727699530516432,
+  "mean_top3_recall": 0.8356807511737088,
+  "mean_top2_oracle_regret": 0.014702114276587963,
+  "mean_top3_oracle_regret": 0.006601504143327474,
+  "mean_tuned_override_rate": 0.22253521126760564,
+  "mean_tuned_beneficial_override_rate": 0.48059814022199204,
+  "selected_geometries": [
+    "pair_propensity_same_winner",
+    "pair_propensity_same_winner",
+    "full_propensity",
+    "pair_propensity",
+    "pair_propensity_same_winner",
+    "pair_propensity_embedding",
+    "pair_propensity_embedding",
+    "pair_propensity_same_winner",
+    "pair_propensity_embedding",
+    "pair_propensity_embedding"
+  ],
+  "selected_k": [
+    100,
+    50,
+    10,
+    100,
+    50,
+    25,
+    25,
+    10,
+    10,
+    50
+  ],
+  "selected_shrinkage": [
+    100.0,
+    20.0,
+    20.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    20.0,
+    0.0,
+    0.0
+  ],
+  "seeds": [
+    20260912,
+    20260913,
+    20260914,
+    20260915,
+    20260916,
+    20260917,
+    20260918,
+    20260919,
+    20260920,
+    20260921
+  ],
+  "runtime_seconds": 36.844409299999825
+}

@@ -1,5 +1,7 @@
 # KuaiRec propensity-neighborhood extensions
 
+> **Status:** These are exploratory extensions of the first pilot. Later chronological confirmation and v2 experiments do not establish a neighborhood-driven ranking improvement. The consolidated conclusion is in `propensity-neighborhoods-v2/OVERALL_CONCLUSION.md` from the repository root.
+
 ## Purpose
 
 These experiments ask whether the first pilot's ranking improvement survives a more conservative recommender implementation. Instead of replacing the base propensity vector with a peer mean, the neighborhood estimates a residual correction to the base ranker. The correction can be shrunk toward zero when peer support is limited.

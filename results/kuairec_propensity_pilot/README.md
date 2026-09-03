@@ -1,5 +1,7 @@
 # KuaiRec propensity-neighborhood pilot
 
+> **Status:** This is an exploratory pilot. Its apparent ranking gain did not survive the stricter chronological confirmation and v2 follow-up experiments. The consolidated conclusion is in `propensity-neighborhoods-v2/OVERALL_CONCLUSION.md` from the repository root.
+
 ## Question
 
 Does progressively refining a user neighborhood improve recommendation, and does the paper's support-aware rule stop before the neighborhood becomes too small?
